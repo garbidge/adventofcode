@@ -1,4 +1,3 @@
-import utils  # noqa
 from aocd.examples import Example
 from aocd.models import Puzzle
 from termcolor import colored

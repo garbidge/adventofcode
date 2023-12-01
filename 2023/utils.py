@@ -1,6 +1,7 @@
 # region imports
 import collections  # noqa
-import copy  # noqa
+import copy
+from email.policy import default  # noqa
 import functools  # noqa
 import itertools  # noqa
 import math  # noqa
@@ -43,22 +44,14 @@ from re import (
     split,  # noqa
     findall,  # noqa
 )
-from typing import List, Any
+from typing import Callable, DefaultDict, List, Any
 
 # endregion
 
 
 # region parsing
-def pgrp(input: str) -> List[List[str]]:
-    return [group.splitlines() for group in input.split("\n\n")]
-
-
-def pgrpint(input: str) -> List[List[int]]:
-    return [[int(n) for n in group] for group in pgrp(input)]
-
-
-def pstrip(input: str) -> List[str]:
-    return [line.strip() for line in input.splitlines()]
+def pstrip(input: str, chars: str | None = None) -> List[str]:
+    return [line.strip(chars) for line in input.splitlines()]
 
 
 def pint(input: str) -> List[int]:
@@ -69,8 +62,29 @@ def plint(input: str) -> List[List[int]]:
     return [ints(line) for line in input.splitlines()]
 
 
+def pgrp(input: str) -> List[List[str]]:
+    return [group.splitlines() for group in input.split("\n\n")]
+
+
+def pgrpint(input: str) -> List[List[int]]:
+    return [[int(n) for n in group] for group in pgrp(input)]
+
+
+def pgrpints(input: str) -> List[List[List[int]]]:
+    return [[ints(line) for line in group] for group in pgrp(input)]
+
+
 def pgridint(input: str) -> List[List[int]]:
-    return [[int(n) for n in line] for line in pstrip(input)]
+    return [[int(n) for n in line] for line in input.splitlines()]
+
+
+def pgriddict(input: str, defaultFunc: Callable, valueFunc: Callable = lambda x: x):
+    ddict = defaultdict(defaultFunc)
+    lines = input.splitlines()
+    for row in range(len(lines)):
+        for col in range(len(lines[row])):
+            ddict[(row, col)] = valueFunc(lines[row][col])
+    return ddict
 
 
 def preg(input: str, pattern: str) -> List[str]:
@@ -102,29 +116,52 @@ def tuple_add(tuple_a: tuple, tuple_b: tuple) -> tuple:
     return tuple(map(lambda a, b: a + b, tuple_a, tuple_b))
 
 
+def print_ddict(ddict: DefaultDict[tuple, str]):
+    for y in range(max(y for (x, y) in ddict.keys()) + 1):
+        for x in range(max(x for (x, y) in ddict.keys()) + 1):
+            print(ddict[(x, y)], end="")
+        print()
+
+
 # endregion
 
 # region points and grids
 
 
+def coord_dirs(dimensions: int):
+    return list(itertools.product(*itertools.repeat([-1, 0, 1], dimensions)))
+
+
+def coord_dirs_diag(dimensions: int):
+    return list(itertools.product(*itertools.repeat([-1, 1], dimensions)))
+
+
+def coord_dirs_str8(dimensions: int):
+    return list(
+        d
+        for d in itertools.product(*itertools.repeat([-1, 0, 1], dimensions))
+        if d.count(0) == dimensions - 1
+    )
+
+
 def neighbrs(coordinate: tuple) -> tuple:
     zeros = tuple(itertools.repeat(0, len(coordinate)))
-    directions = itertools.product(*itertools.repeat([-1, 0, 1], len(coordinate)))
-    return [tuple_add(coordinate, d) for d in directions if d != zeros]
+    return [tuple_add(coordinate, d) for d in coord_dirs(len(coordinate)) if d != zeros]
 
 
 def neighbrs_diag(coordinate: tuple) -> tuple:
-    directions = itertools.product(*itertools.repeat([-1, 1], len(coordinate)))
-    return [tuple_add(coordinate, d) for d in directions]
+    return [tuple_add(coordinate, d) for d in coord_dirs_diag(len(coordinate))]
 
 
 def neighbrs_str8(coordinate: tuple) -> tuple:
-    directions = itertools.product(*itertools.repeat([-1, 0, 1], len(coordinate)))
-    return [
-        tuple_add(coordinate, d)
-        for d in directions
-        if d.count(0) == len(coordinate) - 1
-    ]
+    return [tuple_add(coordinate, d) for d in coord_dirs_str8(len(coordinate))]
+
+
+def coord_yield_dir(coord: tuple, direction: tuple, condition: Callable[[tuple], bool]):
+    coord = tuple_add(coord, direction)
+    while condition(coord):
+        yield coord
+        coord = tuple_add(coord, direction)
 
 
 # endregion
