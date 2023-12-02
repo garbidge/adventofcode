@@ -88,7 +88,7 @@ def pgriddict(input: str, defaultFunc: Callable, valueFunc: Callable = lambda x:
 
 
 def preg(input: str, pattern: str) -> List[str]:
-    return [flatten(re.findall(pattern, line)) for line in input.splitlines()]
+    return [re.findall(pattern, line) for line in input.splitlines()]
 
 
 # endregion

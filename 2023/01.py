@@ -1,5 +1,5 @@
-import utils
 from aocd.models import Puzzle
+from utils import flatten, lmapsub, preg
 
 word_lookup = {
     "one": 1,
@@ -15,12 +15,12 @@ word_lookup = {
 
 
 def parse_a(input):
-    return utils.lmapsub(int, utils.preg(input, "\d"))
+    return lmapsub(int, map(flatten, preg(input, "\d")))
 
 
 def parse_b(input):
     group = "|".join(word_lookup.keys()) + "|\d"
-    return utils.lmapsub(word_value, utils.preg(input, f"(?=({group})).*({group})"))
+    return lmapsub(word_value, map(flatten, preg(input, f"(?=({group})).*({group})")))
 
 
 def word_value(word):
