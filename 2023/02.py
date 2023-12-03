@@ -19,11 +19,11 @@ def parse_game(pairs):
 
 
 def part_a(data):
-    return sum(game for game, largest in data if valid(largest))
-
-
-def valid(largest):
     lims = {"red": 12, "green": 13, "blue": 14}
+    return sum(game for game, largest in data if valid(largest, lims))
+
+
+def valid(largest, lims):
     return all(largest[colour] <= lims[colour] for colour in largest.keys())
 
 

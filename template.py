@@ -19,10 +19,8 @@ puzzle = Puzzle(2023, 1)
 for i, x in enumerate(puzzle.examples):
     example: Example = x
     print("========================================")
-    print(f"Example {i+1}")
-    print()
-    print(example.input_data)
-    print()
+    print(f"Example {i+1}\n")
+    print(example.input_data, "\n")
     parsed = parse(example.input_data)
     a = part_a(parsed)
     b = part_b(parsed)

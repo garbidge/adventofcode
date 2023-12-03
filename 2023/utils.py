@@ -116,6 +116,10 @@ def tuple_add(tuple_a: tuple, tuple_b: tuple) -> tuple:
     return tuple(map(lambda a, b: a + b, tuple_a, tuple_b))
 
 
+def tuple_sub(tuple_a: tuple, tuple_b: tuple) -> tuple:
+    return tuple(map(lambda a, b: a - b, tuple_a, tuple_b))
+
+
 def print_ddict(ddict: DefaultDict[tuple, str]):
     for y in range(max(y for (x, y) in ddict.keys()) + 1):
         for x in range(max(x for (x, y) in ddict.keys()) + 1):
@@ -129,17 +133,17 @@ def print_ddict(ddict: DefaultDict[tuple, str]):
 
 
 def coord_dirs(dimensions: int):
-    return list(itertools.product(*itertools.repeat([-1, 0, 1], dimensions)))
+    return list(itertools.product((-1, 0, 1), repeat=dimensions))
 
 
 def coord_dirs_diag(dimensions: int):
-    return list(itertools.product(*itertools.repeat([-1, 1], dimensions)))
+    return list(itertools.product((-1, 1), repeat=dimensions))
 
 
 def coord_dirs_str8(dimensions: int):
     return list(
         d
-        for d in itertools.product(*itertools.repeat([-1, 0, 1], dimensions))
+        for d in itertools.product((-1, 0, 1), repeat=dimensions)
         if d.count(0) == dimensions - 1
     )
 
