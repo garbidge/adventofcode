@@ -83,11 +83,11 @@ def pgriddict(input: str, defaultFunc: Callable, valueFunc: Callable = lambda x:
     lines = input.splitlines()
     for row in range(len(lines)):
         for col in range(len(lines[row])):
-            ddict[(row, col)] = valueFunc(lines[row][col])
+            ddict[(col, row)] = valueFunc(lines[row][col])
     return ddict
 
 
-def preg(input: str, pattern: str) -> List[str]:
+def preg(input: str, pattern: str) -> List[List[Any]]:
     return [re.findall(pattern, line) for line in input.splitlines()]
 
 
