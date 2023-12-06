@@ -10,39 +10,39 @@ import re  # noqa
 from collections import Counter, defaultdict, deque  # noqa
 from copy import copy, deepcopy  # noqa
 from functools import reduce, cache  # noqa
-from itertools import (
-    product,  # noqa
-    permutations,  # noqa
-    combinations,  # noqa
-    repeat,  # noqa
-    pairwise,  # noqa
-    chain,  # noqa
-    accumulate,  # noqa
+from itertools import (  # noqa
+    product,
+    permutations,
+    combinations,
+    repeat,
+    pairwise,
+    chain,
+    accumulate,
 )
-from math import (
-    prod,  # noqa
-    ceil,  # noqa
-    floor,  # noqa
-    trunc,  # noqa
-    sqrt,  # noqa
-    cbrt,  # noqa
-    copysign,  # noqa
-    comb,  # noqa
-    perm,  # noqa
-    factorial,  # noqa
-    gcd,  # noqa
-    lcm,  # noqa
-    cos,  # noqa
-    acos,  # noqa
-    sin,  # noqa
-    asin,  # noqa
-    tan,  # noqa
-    atan,  # noqa
-    dist,  # noqa Euclidean distance
+from math import (  # noqa
+    prod,
+    ceil,
+    floor,
+    trunc,
+    sqrt,
+    cbrt,
+    copysign,
+    comb,
+    perm,
+    factorial,
+    gcd,
+    lcm,
+    cos,
+    acos,
+    sin,
+    asin,
+    tan,
+    atan,
+    dist,  # Euclidean distance
 )
-from re import (
-    split,  # noqa
-    findall,  # noqa
+from re import (  # noqa
+    split,
+    findall,
 )
 from typing import Callable, DefaultDict, List, Any
 

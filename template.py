@@ -1,6 +1,21 @@
 from aocd.examples import Example
 from aocd.models import Puzzle
 from termcolor import colored
+from utils import (  # noqa
+    flatten,
+    ints,
+    lmap,
+    lmapsub,
+    pgriddict,
+    pgridint,
+    pgrp,
+    pgrpint,
+    pgrpints,
+    pint,
+    plint,
+    preg,
+    pstrip,
+)
 
 
 def parse(input):
