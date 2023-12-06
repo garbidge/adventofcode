@@ -1,46 +1,25 @@
-from collections import defaultdict
+from itertools import repeat
 
 from aocd.models import Puzzle
+from utils import lmap
 
 
 def parse(input):
-    lines = input.splitlines()
-    numparts = [line.split(": ")[1] for line in lines]
-    for part in numparts:
-        nums = [[int(n) for n in p.split()] for p in part.split(" | ")]
-        yield nums
+    for line in input.splitlines():
+        a, b = lmap(set, [part.split() for part in line.split(" | ")])
+        yield a & b
 
 
 def part_a(data):
-    total = 0
-    for winners, mine in data:
-        lookup = set(winners)
-        count = len([n for n in mine if n in lookup])
-        value = 0
-        while count > 0:
-            value = 1 if value == 0 else value * 2
-            count -= 1
-        total += value
-    return total
+    return sum(2 ** (len(matches) - 1) for matches in data if matches)
 
 
 def part_b(data):
-    results = defaultdict(int)
-    counts = defaultdict(int)
-    for i, (winners, mine) in enumerate(data):
-        lookup = set(winners)
-        count = len([n for n in mine if n in lookup])
-        results[i] = count
-        counts[i] = 1
-    for i in range(len(data) - 1):
-        count = results[i]
-        if count > 0:
-            cards = counts[i]
-            for x in range(count):
-                index = i + 1 + x
-                if index in counts:
-                    counts[index] += cards
-    return sum(counts.values())
+    counts = [*repeat(1, len(data))]
+    for i, intersected_set in enumerate(data):
+        for x in range(len(intersected_set)):
+            counts[i + x + 1] += counts[i]
+    return sum(counts)
 
 
 puzzle = Puzzle(2023, 4)

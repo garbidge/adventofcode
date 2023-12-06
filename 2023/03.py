@@ -1,7 +1,7 @@
 from math import prod
 
 from aocd.models import Puzzle
-from utils import flatten, neighbrs, pgriddict, tuple_add
+from utils import flatten, neighbrs, pgriddict
 
 
 def parse(input):
@@ -9,49 +9,37 @@ def parse(input):
 
 
 def part_a(data):
-    symbs = [coord for coord in data if issymbol(data[coord])]
-    neighs = set(flatten([neighbrs(coord) for coord in symbs]))
-    zones = set(getzone(data, coord) for coord in neighs if data[coord].isdigit())
-    return sum(getnum(data, zone) for zone in zones)
-
-
-def issymbol(char: str):
-    return char != "." and not char.isdigit()
-
-
-def getzone(data, coord):
-    out = (coord,)
-    temp = tuple_add(coord, (1, 0))
-    while temp in data and data[temp].isdigit():
-        out = (*out, temp)
-        temp = tuple_add(temp, (1, 0))
-    temp = tuple_add(coord, (-1, 0))
-    while temp in data and data[temp].isdigit():
-        out = (temp, *out)
-        temp = tuple_add(temp, (-1, 0))
-    return out
-
-
-def getnum(data, zone):
-    out = ""
-    for coord in zone:
-        out += data[coord]
-    return int(out)
+    symbols = [xy for xy in data if data[xy] != "." and not data[xy].isdigit()]
+    return sum(get_num(data, *zone) for zone in number_neighbours(symbols))
 
 
 def part_b(data):
-    tot = 0
-    symbs = [coord for coord in data if data[coord] == "*"]
-    for s in symbs:
-        neighs = neighbrs(s)
-        zones = set([getzone(data, coord) for coord in neighs if data[coord].isdigit()])
-        if len(zones) == 2:
-            tot += prod(getnum(data, zone) for zone in zones)
-    return tot
+    gears = [xy for xy in data if data[xy] == "*"]
+    zone_groups = filter(
+        lambda group: len(group) == 2, [number_neighbours([xy]) for xy in gears]
+    )
+    return sum(prod(get_num(data, *zone) for zone in group) for group in zone_groups)
+
+
+def number_neighbours(coordinates):
+    neighbours = set(flatten([neighbrs(xy) for xy in coordinates]))
+    return set(get_zone(data, *xy) for xy in neighbours if data[xy].isdigit())
+
+
+def get_zone(data, x, y):
+    start, end = (x, x)
+    while (start - 1, y) in data and data[(start - 1, y)].isdigit():
+        start -= 1
+    while (end + 1, y) in data and data[(end + 1, y)].isdigit():
+        end += 1
+    return (start, end, y)
+
+
+def get_num(data, lower_x, upper_x, y):
+    return int("".join([data[(x, y)] for x in range(lower_x, upper_x + 1)]))
 
 
 puzzle = Puzzle(2023, 3)
-
 data = parse(puzzle.input_data)
 print("part A", part_a(data))
 print("part B", part_b(data))
