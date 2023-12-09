@@ -7,29 +7,23 @@ def parse(input):
 
 
 def part_a(data):
-    return sum(extrap(predict(d))[0][-1] for d in data)
+    return sum(extrapolate(d) for d in data)
+
+
+def part_b(data):
+    return sum(extrapolate(d, True) for d in data)
 
 
 def diffs(dat):
     return [dat[i + 1] - dat[i] for i in range(len(dat) - 1)]
 
 
-def predict(dat):
-    out = [dat, diffs(dat)]
-    while any(d != 0 for d in out[-1]):
-        out.append(diffs(out[-1]))
-    return out
-
-
-def extrap(predicted):
-    predicted[-1].append(0)
-    for i in reversed(range(len(predicted) - 1)):
-        predicted[i].append(predicted[i][-1] + predicted[i + 1][-1])
-    return predicted
-
-
-def part_b(data):
-    return part_a([list(reversed(d)) for d in data])
+def extrapolate(dat, fromStart=False):
+    if all(d == 0 for d in dat):
+        return 0
+    if fromStart:
+        return dat[0] - extrapolate(diffs(dat), fromStart)
+    return dat[-1] + extrapolate(diffs(dat))
 
 
 puzzle = Puzzle(2023, 9)
