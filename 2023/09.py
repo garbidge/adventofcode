@@ -7,48 +7,29 @@ def parse(input):
 
 
 def part_a(data):
-    total = 0
-    for d in data:
-        predicted = predict(d)
-        extrap(predicted)
-        total += predicted[0][-1]
-    return total
-
-
-def predict(dat):
-    diff = diffs(dat)
-    out = [dat, diff]
-    while any(d != 0 for d in diff):
-        diff = diffs(diff)
-        out = [*out, diff]
-    return out
-
-
-def extrap(predicted):
-    predicted[-1].append(0)
-    for i in reversed(range(len(predicted) - 1)):
-        val = predicted[i][-1] + predicted[i + 1][-1]
-        predicted[i].append(val)
-
-
-def baxtrap(predicted):
-    predicted[-1].insert(0, 0)
-    for i in reversed(range(len(predicted) - 1)):
-        val = predicted[i][0] - predicted[i + 1][0]
-        predicted[i].insert(0, val)
+    return sum(extrap(predict(d))[0][-1] for d in data)
 
 
 def diffs(dat):
     return [dat[i + 1] - dat[i] for i in range(len(dat) - 1)]
 
 
+def predict(dat):
+    out = [dat, diffs(dat)]
+    while any(d != 0 for d in out[-1]):
+        out.append(diffs(out[-1]))
+    return out
+
+
+def extrap(predicted):
+    predicted[-1].append(0)
+    for i in reversed(range(len(predicted) - 1)):
+        predicted[i].append(predicted[i][-1] + predicted[i + 1][-1])
+    return predicted
+
+
 def part_b(data):
-    total = 0
-    for d in data:
-        predicted = predict(d)
-        baxtrap(predicted)
-        total += predicted[0][0]
-    return total
+    return part_a([list(reversed(d)) for d in data])
 
 
 puzzle = Puzzle(2023, 9)
