@@ -13,25 +13,20 @@ word_lookup = {
     "nine": 9,
 }
 
-
 def parse_a(input):
     return lmapsub(int, preg(input, "\d"))
-
 
 def parse_b(input):
     group = "|".join(word_lookup.keys()) + "|\d"
     return lmapsub(word_value, preg(input, f"(?=({group}))"))
-
 
 def word_value(word):
     if word in word_lookup:
         return word_lookup[word]
     return int(word)
 
-
 def get_sum(data):
     return sum(map(lambda nums: 10 * nums[0] + nums[-1], data))
-
 
 puzzle = Puzzle(2023, 1)
 data_a = parse_a(puzzle.input_data)

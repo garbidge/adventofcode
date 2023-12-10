@@ -1,7 +1,5 @@
-from math import lcm
-
 from aocd.models import Puzzle
-
+from math import lcm
 
 def parse(input):
     dirs, maps = input.split("\n\n")
@@ -9,12 +7,10 @@ def parse(input):
     maps = {source: dest for source, dest in maps}
     return dirs, maps
 
-
 def parse_line(line):
     source, dest = line.split(" = ")
     dest = dest[1:-1].split(", ")
     return (source, dest)
-
 
 def part_a(data):
     dirs, maps = data
@@ -26,7 +22,6 @@ def part_a(data):
         current = node[LR]
         steps += 1
     return steps
-
 
 def part_b(data):
     dirs, maps = data
@@ -42,7 +37,6 @@ def part_b(data):
             if current[i].endswith("Z"):
                 times[i] = steps
     return lcm(*times)
-
 
 puzzle = Puzzle(2023, 8)
 data = parse(puzzle.input_data)

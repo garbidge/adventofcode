@@ -17,18 +17,14 @@ from utils import (  # noqa
     pstrip,
 )
 
-
 def parse(input):
     return []
-
 
 def part_a(data):
     return 0
 
-
 def part_b(data):
     return 0
-
 
 puzzle = Puzzle(2023, 1)
 for i, x in enumerate(puzzle.examples):

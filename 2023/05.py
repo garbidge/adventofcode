@@ -1,8 +1,6 @@
-from collections import deque
-
 from aocd.models import Puzzle
+from collections import deque
 from utils import pgrp
-
 
 def parse(input):
     groups = pgrp(input)
@@ -10,24 +8,20 @@ def parse(input):
     maps = [parse_group(g) for g in groups[1:]]
     return (seeds, maps)
 
-
 def parse_group(group):
     name = group[0]
     ranges = [[int(n) for n in line.split()] for line in group[1:]]
     return (name, ranges)
 
-
 def part_a(data):
     (seeds, maps) = data
     return min(locate(seed, maps) for seed in seeds)
-
 
 def locate(seed, maps):
     value = seed
     for m in maps:
         value = nextval(value, m)
     return value
-
 
 def nextval(value, mp):
     for dest, start, rng in mp[1]:
@@ -36,10 +30,8 @@ def nextval(value, mp):
             return dest + diff
     return value
 
-
 def part_b(data):
     return min(x for x in do_q(data))
-
 
 def do_q(data):
     (seeds, maps) = data
@@ -57,7 +49,6 @@ def do_q(data):
                 yield ns
             else:
                 q.append((ns, ne, nindex))
-
 
 def rangesearch(start, end, index, rngs):
     srange, drange = rngs[index]
@@ -86,7 +77,6 @@ def rangesearch(start, end, index, rngs):
     for s, e in missed:
         yield (s, e, index + 1)
 
-
 def ranges(mp):
     sranges = []
     dranges = []
@@ -98,7 +88,6 @@ def ranges(mp):
         sranges.append((start, start + rng - 1))
         dranges.append((dest, dest + rng - 1))
     return (sranges, dranges)
-
 
 puzzle = Puzzle(2023, 5)
 data = parse(puzzle.input_data)

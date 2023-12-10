@@ -1,12 +1,9 @@
-from math import ceil, floor, sqrt
-
 from aocd.models import Puzzle
+from math import ceil, floor, sqrt
 from utils import lmapsub
-
 
 def parse(input):
     return lmapsub(int, [line.split()[1:] for line in input.splitlines()])
-
 
 def part_a(data):
     product = 1
@@ -14,11 +11,9 @@ def part_a(data):
         product *= quadratic_solve(time, distance)
     return product
 
-
 def part_b(data):
     time, distance = [int("".join(map(str, numbers))) for numbers in data]
     return quadratic_solve(time, distance)
-
 
 def quadratic_solve(time, best_dist):
     # For T=time, D=dist:
@@ -29,7 +24,6 @@ def quadratic_solve(time, best_dist):
     lower = (time - sqrtDiscriminant) / 2
     upper = (time + sqrtDiscriminant) / 2
     return ceil(upper - 1) - floor(lower + 1) + 1
-
 
 puzzle = Puzzle(2023, 6)
 data = parse(puzzle.input_data)
