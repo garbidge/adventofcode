@@ -32,15 +32,15 @@ def neighbours(data, x, y):
 
 def find_path(data):
     start = next(coord for coord in data if data[coord] == "S")
-    q = deque()
-    q.append(((start,), 0))
-    while q:
-        path, dist = q.popleft()
-        for n in neighbours(data, *path[-1]):
-            if dist > 1 and data[n] == "S":
-                return path
-            if n in data and n not in path:
-                q.append(((*path, n), dist + 1))
+    current, end = [n for n in neighbours(data, *start)]
+    seen = set((start, current))
+    path = [start, current]
+    current = current
+    while current != end:
+        current = next(n for n in neighbours(data, *current) if n not in seen)
+        seen.add(current)
+        path.append(current)
+    return path
 
 def contained_tiles(data, path):
     bigger = expand(data, path)
@@ -51,7 +51,7 @@ def contained_tiles(data, path):
         c = q.popleft()
         bigger[c] = " "
         for n in neighbrs_str8(c):
-            if n not in seen and n in bigger and bigger[n] == ".":
+            if n not in seen and bigger[n] == ".":
                 seen.add(n)
                 q.append(n)
     return len([(x, y) for x, y in bigger if bigger[(x, y)] == "." and x % 3 == 1 and y % 3 == 1])
