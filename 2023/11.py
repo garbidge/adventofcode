@@ -1,44 +1,22 @@
+from itertools import combinations
 from math import dist
 from aocd.models import Puzzle
 from utils import pgriddict
 
 def parse(input: str):
-    test = input.splitlines()
-    cols, rows = set(), set()
-    i = 0
-    while i < len(test):
-        if all(c == '.' for c in test[i]):
-            rows.add(i)
-            i += 1
-        i += 1
-    i = 0
-    while i < len(test[0]):
-        col = [test[x][i] for x in range(len(test))]
-        if all(c == '.' for c in col):
-            cols.add(i)
-            i += 1
-        i += 1
+    split = input.splitlines()
+    rows = set(i for i, row in enumerate(split) if all(c == '.' for c in row))
+    cols = set(i for i in range(len(split[0])) if all(c == '.' for c in [row[i] for row in split]))
     return (pgriddict(input, str), rows, cols)
 
 def path_sum(grid, rows, cols, expanded_size):
-    total = 0
     galaxies = [coord for coord in grid if grid[coord] == '#']
-    for i in range(len(galaxies)):
-        for j in range(i+1, len(galaxies)):
-            total += dist(galaxies[i], galaxies[j], rows, cols, expanded_size)
-    return total
+    return sum(dist(*a, *b, rows, cols, expanded_size) for a,b in combinations(galaxies, 2))
 
-def dist(a, b, rows, cols, expanded_size):
-    (ax,ay) = a
-    (bx,by) = b
-    distance = abs(bx-ax) + abs(by-ay)
-    for i in range(min(ax,bx), max(ax,bx)+1):
-        if i in cols:
-            distance += expanded_size - 1
-    for i in range(min(ay,by), max(ay,by)+1):
-        if i in rows:
-            distance += expanded_size - 1
-    return distance
+def dist(x1, y1, x2, y2, rows, cols, expanded_size):
+    num_rows = sum(1 for r in range(min(y1,y2), max(y1,y2)) if r in rows)
+    num_cols = sum(1 for c in range(min(x1,x2), max(x1,x2)) if c in cols)
+    return abs(x1-x2) + abs(y1-y2) + (expanded_size - 1) * (num_rows + num_cols)
 
 puzzle = Puzzle(2023, 11)
 grid, rows, cols = parse(puzzle.input_data) 
