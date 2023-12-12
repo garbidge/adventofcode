@@ -24,7 +24,7 @@ def perms(line, counts):
         for prefix, removed, suffix in possibles:
             if '#' in prefix: break
             if '.' in removed: continue
-            if (len(suffix) == 0 or suffix[0] != '#') and (len(prefix) == 0 or prefix[-1] != '#'):
+            if len(suffix) == 0 or suffix[0] != '#':
                 yield cache_perms(suffix[1:], counts[1:])
 
 puzzle = Puzzle(2023, 12)
