@@ -1,7 +1,7 @@
 from aocd.models import Puzzle
 from collections import defaultdict, deque
 from math import ceil
-from utils import neighbrs_str8, pgriddict
+from utils import maxes, neighbrs_str8, pgriddict
 
 def parse(input):
     return pgriddict(input, str)
@@ -32,10 +32,9 @@ def neighbours(data, x, y):
 
 def find_path(data):
     start = next(coord for coord in data if data[coord] == "S")
-    current, end = [n for n in neighbours(data, *start)]
+    current, end = neighbours(data, *start)
     seen = set((start, current))
     path = [start, current]
-    current = current
     while current != end:
         current = next(n for n in neighbours(data, *current) if n not in seen)
         seen.add(current)
@@ -44,8 +43,7 @@ def find_path(data):
 
 def contained_tiles(data, path):
     bigger = expand(data, path)
-    maxx, maxy = max(x for (x, y) in bigger), max(y for (x, y) in bigger)
-    q = deque(((0, 0), (maxx, 0), (0, maxy), (maxx, maxy)))
+    q = deque(((0, 0),))
     seen = set(q)
     while q:
         c = q.popleft()
@@ -54,11 +52,11 @@ def contained_tiles(data, path):
             if n not in seen and bigger[n] == ".":
                 seen.add(n)
                 q.append(n)
-    return len([(x, y) for x, y in bigger if bigger[(x, y)] == "." and x % 3 == 1 and y % 3 == 1])
+    return sum(bigger[(x, y)] == "." for x, y in bigger if x % 3 == 1 and y % 3 == 1)
 
 def expand(data, path):
     path = set(path)
-    maxx, maxy = max(x for (x, y) in data), max(y for (x, y) in data)
+    maxx, maxy = maxes(data)
     bigger = defaultdict(str)
     for x in range(maxx + 1):
         for y in range(maxy + 1):

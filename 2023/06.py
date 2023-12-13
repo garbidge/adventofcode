@@ -1,15 +1,13 @@
+from functools import reduce
 from aocd.models import Puzzle
-from math import ceil, floor, sqrt
+from math import ceil, floor, prod, sqrt
 from utils import lmapsub
 
 def parse(input):
     return lmapsub(int, [line.split()[1:] for line in input.splitlines()])
 
 def part_a(data):
-    product = 1
-    for time, distance in zip(*data):
-        product *= quadratic_solve(time, distance)
-    return product
+    return prod(quadratic_solve(time, distance) for time,distance in zip(*data))
 
 def part_b(data):
     time, distance = [int("".join(map(str, numbers))) for numbers in data]

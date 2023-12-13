@@ -14,8 +14,7 @@ def diffs(dat):
     return [dat[i + 1] - dat[i] for i in range(len(dat) - 1)]
 
 def extrapolate(dat, fromStart=False):
-    if all(d == 0 for d in dat):
-        return 0
+    if all(d == 0 for d in dat): return 0
     if fromStart:
         return dat[0] - extrapolate(diffs(dat), fromStart)
     return dat[-1] + extrapolate(diffs(dat))

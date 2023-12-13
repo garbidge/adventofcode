@@ -43,7 +43,7 @@ from re import (  # noqa
     split,
     findall,
 )
-from typing import Callable, DefaultDict, List, Any
+from typing import Callable, DefaultDict, Iterable, List, Any
 
 # endregion
 
@@ -114,6 +114,14 @@ def transpose(iterable):
 
 def transpose_str(collection: List[str]):
     return [''.join(collection[r][c] for r in range(len(collection))) for c in range(len(collection[0]))]
+
+def maxes(iterable: Iterable[tuple]):
+    listified = [*iterable]
+    return [max(tup[i] for tup in listified) for i in range(len(listified[0]))]
+
+def mins(iterable: Iterable[tuple]):
+    listified = [*iterable]
+    return [min(tup[i] for tup in listified) for i in range(len(listified[0]))]
 
 # endregion
 
