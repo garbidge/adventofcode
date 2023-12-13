@@ -1,7 +1,6 @@
 # region imports
 import collections  # noqa
 import copy
-from email.policy import default  # noqa
 import functools  # noqa
 import itertools  # noqa
 import math  # noqa
@@ -109,6 +108,12 @@ def print_ddict(ddict: DefaultDict[tuple, str]):
         for x in range(max(x for (x, y) in ddict.keys()) + 1):
             print(ddict[(x, y)], end="")
         print()
+
+def transpose(iterable):
+    return lmap(list, zip(*iterable))
+
+def transpose_str(collection: List[str]):
+    return [''.join(collection[r][c] for r in range(len(collection))) for c in range(len(collection[0]))]
 
 # endregion
 
