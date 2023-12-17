@@ -11,8 +11,7 @@ def parse(input):
 def part_a(data):
     h = []
     heappush(h, (0, (0,0), 'r', 0))
-    max_x, max_y = maxes(data)
-    end = (max_x, max_y)
+    end = maxes(data)
     seen = set()
     while h:
         dist, point, direction, length = heappop(h)
@@ -39,10 +38,9 @@ def rotate(direction):
 
 def part_b(data):
     h = []
-    heappush(h, (sum(data[p] for p in ((1,0), (2,0), (3,0))), (3,0), 'r', 3))
-    heappush(h, (sum(data[p] for p in ((0,1), (0,2), (0,3))), (0,3), 'd', 3))
-    max_x, max_y = maxes(data)
-    end = (max_x, max_y)
+    heappush(h, (sum(data[p] for p in ((1,0), (2,0), (3,0), (4,0))), (4,0), 'r', 4))
+    heappush(h, (sum(data[p] for p in ((0,1), (0,2), (0,3), (0,4))), (0,4), 'd', 4))
+    end = maxes(data)
     seen = set()
     while h:
         dist, point, direction, length = heappop(h)

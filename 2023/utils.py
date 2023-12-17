@@ -117,11 +117,11 @@ def transpose_str(collection: List[str]):
 
 def maxes(iterable: Iterable[tuple]):
     listified = [*iterable]
-    return [max(tup[i] for tup in listified) for i in range(len(listified[0]))]
+    return tuple(max(tup[i] for tup in listified) for i in range(len(listified[0])))
 
 def mins(iterable: Iterable[tuple]):
     listified = [*iterable]
-    return [min(tup[i] for tup in listified) for i in range(len(listified[0]))]
+    return tuple(min(tup[i] for tup in listified) for i in range(len(listified[0])))
 
 # endregion
 
