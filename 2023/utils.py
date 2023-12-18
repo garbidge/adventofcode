@@ -104,8 +104,10 @@ def tuple_sub(tuple_a: tuple, tuple_b: tuple) -> tuple:
     return tuple(map(lambda a, b: a - b, tuple_a, tuple_b))
 
 def print_ddict(ddict: DefaultDict[tuple, str]):
-    for y in range(max(y for (x, y) in ddict.keys()) + 1):
-        for x in range(max(x for (x, y) in ddict.keys()) + 1):
+    min_x, min_y = mins(ddict)
+    max_x, max_y = maxes(ddict)
+    for y in range(min_y, max_y + 1):
+        for x in range(min_x, max_x + 1):
             print(ddict[(x, y)], end="")
         print()
 
