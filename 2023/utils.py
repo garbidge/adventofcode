@@ -125,6 +125,10 @@ def mins(iterable: Iterable[tuple]):
     listified = [*iterable]
     return tuple(min(tup[i] for tup in listified) for i in range(len(listified[0])))
 
+def chunks(collection: List, size: int):
+    for i in range(0, len(collection), size):
+        yield collection[i:i+size]
+
 # endregion
 
 # region points and grids

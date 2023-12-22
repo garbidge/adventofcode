@@ -1,4 +1,5 @@
 from collections import defaultdict
+from functools import reduce
 from aocd.models import Puzzle
 
 def parse(input):
@@ -8,10 +9,7 @@ def part_a(data):
     return sum(hash(s) for s in data)
 
 def hash(string):
-    value = 0
-    for c in string:
-        value = (17 * (value + ord(c))) % 256
-    return value
+    return reduce(lambda total,c: 17 * (total + ord(c)) % 256, string, 0)
 
 def part_b(data):
     mp = defaultdict(list)

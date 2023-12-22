@@ -12,7 +12,7 @@ def part_a(data):
     h = []
     heappush(h, (0, (0,0), 'r', 0))
     end = maxes(data)
-    seen = set()
+    seen = set(((p, direction, length) for _,p,direction,length in h))
     while h:
         dist, point, direction, length = heappop(h)
         if point == end:
@@ -41,7 +41,7 @@ def part_b(data):
     heappush(h, (sum(data[p] for p in ((1,0), (2,0), (3,0), (4,0))), (4,0), 'r', 4))
     heappush(h, (sum(data[p] for p in ((0,1), (0,2), (0,3), (0,4))), (0,4), 'd', 4))
     end = maxes(data)
-    seen = set()
+    seen = set(((p, direction, length) for _,p,direction,length in h))
     while h:
         dist, point, direction, length = heappop(h)
         if point == end:

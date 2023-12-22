@@ -1,4 +1,3 @@
-from functools import reduce
 from aocd.models import Puzzle
 from math import ceil, floor, prod, sqrt
 from utils import lmapsub

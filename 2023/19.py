@@ -16,16 +16,11 @@ def parse(input):
             cat, val = subpart.split('=')
             p_dict[cat] = int(val)
         part_list.append(p_dict)
-        p_dict.values()
     return (rule_dict, part_list)
 
 def part_a(data):
     rule_dict, part_list = data
-    accepted = []
-    for p in part_list:
-        result = follow(rule_dict, p, 'in')
-        if result == 'A': accepted.append(p)
-    return sum(sum(p.values()) for p in accepted)
+    return sum(sum(p.values()) for p in part_list if follow(rule_dict, p, 'in') == 'A')
 
 def follow(rule_dict, part, rule_name):
     rule = rule_dict[rule_name]
@@ -35,13 +30,13 @@ def follow(rule_dict, part, rule_name):
             val, out = rest.split(':')
             partval = part[cat]
             if op == '<' and partval < int(val):
-                return returnfrom(rule_dict, part, out)
+                return part_result(rule_dict, part, out)
             elif op == '>' and partval > int(val):
-                return returnfrom(rule_dict, part, out)
+                return part_result(rule_dict, part, out)
         else:
-            return returnfrom(rule_dict, part, r)
+            return part_result(rule_dict, part, r)
 
-def returnfrom(rule_dict, part, outname):
+def part_result(rule_dict, part, outname):
     if outname in ['A','R']: return outname
     else: return follow(rule_dict, part, outname)
 

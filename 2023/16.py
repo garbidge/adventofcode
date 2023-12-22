@@ -23,7 +23,7 @@ def parse(input):
 
 def part_a(data, start = (0,0), start_dir = 'r'):
     q = deque(((start, d) for d in next_direction(data[start], start_dir)))
-    seen = set(((start, start_dir),))
+    seen = set(q)
     while q:
         coord, d = q.popleft()
         next_coord = tuple_add(coord, directions[d])

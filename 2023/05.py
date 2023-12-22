@@ -1,6 +1,32 @@
+from functools import reduce
 from aocd.models import Puzzle
-from collections import deque
-from utils import pgrp
+from utils import chunks, pgrp
+
+class Range:
+    def __init__(self, start, end):
+        self.start = start
+        self.end = end
+
+    def overlaps(self, other):
+        return self.start < other.end and self.end > other.start
+
+    def intersect(self, other):
+        start, end = max(self.start, other.start), min(self.end, other.end)
+        return Range(start, end)
+
+    def transpose(self, src, dest):
+        diff = self.start - src.start
+        length = self.end - self.start
+        return Range(dest.start + diff, dest.start + diff + length)
+
+    def contains(self, other):
+        return self.start <= other.start and self.end >= other.end
+
+    def exclude(self, other):
+        if not self.overlaps(other): yield self
+        else:
+            if other.start > self.start: yield Range(self.start, other.start - 1)
+            if other.end < self.end: yield Range(other.end + 1, self.end)
 
 def parse(input):
     groups = pgrp(input)
@@ -9,85 +35,57 @@ def parse(input):
     return (seeds, maps)
 
 def parse_group(group):
-    name = group[0]
-    ranges = [[int(n) for n in line.split()] for line in group[1:]]
-    return (name, ranges)
+    return [[int(n) for n in line.split()] for line in group[1:]]
 
 def part_a(data):
     (seeds, maps) = data
     return min(locate(seed, maps) for seed in seeds)
 
 def locate(seed, maps):
-    value = seed
-    for m in maps:
-        value = nextval(value, m)
-    return value
+    return reduce(lambda value, cur_map: next_val(value, cur_map), maps, seed)
 
-def nextval(value, mp):
-    for dest, start, rng in mp[1]:
+def next_val(value, cur_map):
+    for dest, start, length in cur_map:
         diff = value - start
-        if diff >= 0 and diff < rng:
+        if diff >= 0 and diff < length:
             return dest + diff
     return value
 
 def part_b(data):
-    return min(x for x in do_q(data))
+    return min(range_start for range_start in find_range_starts(data))
 
-def do_q(data):
+def ranges(mapping):
+    for dest, start, length in mapping:
+        yield (Range(start, start + length - 1), Range(dest, dest + length - 1))
+
+def find_range_starts(data):
     (seeds, maps) = data
-    pairs = [
-        (seeds[i], seeds[i] + seeds[i + 1] - 1) for i in range(0, len(seeds) - 1, 2)
-    ]
-    rngs = [ranges(m) for m in maps]
-    q = deque()
-    for p in pairs:
-        q.append((p[0], p[1], 0))
-    while q:
-        (start, end, index) = q.popleft()
-        for ns, ne, nindex in rangesearch(start, end, index, rngs):
-            if nindex == len(rngs):
-                yield ns
-            else:
-                q.append((ns, ne, nindex))
+    init_ranges = [Range(a, a+b) for a,b in chunks(seeds, 2)]
+    range_mappings = [list(ranges(m)) for m in maps]
+    for r in init_ranges:
+        yield from rangesearch(r, range_mappings)
 
-def rangesearch(start, end, index, rngs):
-    srange, drange = rngs[index]
-    missed = [(start, end)]
-    for i in range(len(srange)):
-        (ss, se) = srange[i]
-        if start < se and end > ss:
-            rs, re = max(start, ss), min(end, se)
-            diffstart = rs - ss
-            diff = re - rs
-            ds, de = drange[i]
-            yield (ds + diffstart, ds + diffstart + diff, index + 1)
+def rangesearch(current_range, range_mappings, depth = 0):
+    if depth > len(range_mappings) - 1:
+        yield current_range.start
+        return
+    
+    mappings = range_mappings[depth]
+    unmapped = [current_range]
+    for src,dest in mappings:
+        if current_range.overlaps(src):
+            intersection = current_range.intersect(src)
+            transposed = intersection.transpose(src, dest)
+            yield from rangesearch(transposed, range_mappings, depth + 1)
 
-            nx_missed = []
-            for s, e in missed:
-                if rs <= s and re >= e:
-                    continue
-                if re < s or rs > e:
-                    nx_missed.append((s, e))
-                else:
-                    if rs > s + 1:
-                        nx_missed.append((s, rs - 1))
-                    if re < e:
-                        nx_missed.append((re + 1, e))
-            missed = nx_missed
-    for s, e in missed:
-        yield (s, e, index + 1)
-
-def ranges(mp):
-    sranges = []
-    dranges = []
-    mn = min(start for dest, start, rng in mp[1])
-    if mn > 1:
-        sranges.append((0, mn - 1))
-        dranges.append((0, mn - 1))
-    for dest, start, rng in mp[1]:
-        sranges.append((start, start + rng - 1))
-        dranges.append((dest, dest + rng - 1))
-    return (sranges, dranges)
+            nx_unmapped = []
+            for r in unmapped:
+                if intersection.contains(r): continue
+                for excluded in r.exclude(intersection):
+                    nx_unmapped.append(excluded)
+            unmapped = nx_unmapped
+    for r in unmapped:
+        yield from rangesearch(r, range_mappings, depth + 1)
 
 puzzle = Puzzle(2023, 5)
 data = parse(puzzle.input_data)
