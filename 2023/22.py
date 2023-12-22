@@ -1,83 +1,64 @@
-from collections import defaultdict
+from collections import defaultdict, deque
 from copy import deepcopy
+from itertools import product
 from aocd.models import Puzzle
 from utils import lmap
 
 def parse(input):
     bricks = []
     for line in input.splitlines():
-        left,right = line.split('~')
-        left = lmap(int, left.split(','))
-        right = lmap(int, right.split(','))
+        left,right = [lmap(int, side.split(',')) for side in line.split('~')]
         bricks.append((left, right))
     return fall(bricks)
 
 def fall(bricks):
-    count = 99
-    while count > 0:
-        count = 0
+    grid = fill(bricks)
+    unblocked = [(i, *brick) for i,brick in enumerate(bricks) if not isblocked(grid, brick)]
+    while len(unblocked):
+        for i,(sx,sy,sz),(ex,ey,ez) in unblocked:
+            bricks[i] = ((sx,sy,sz-1),(ex,ey,ez-1))
         grid = fill(bricks)
-        for i in range(len(bricks)):
-            (sx,sy,sz),(ex,ey,ez) = bricks[i]
-            if sz == 1: continue
-            
-            if not isblocked(grid, sx,sy,sz, ex,ey,ez):
-                bricks[i] = ((sx,sy,sz-1),(ex,ey,ez-1))
-                count += 1
+        unblocked = [(i, *brick) for i,brick in enumerate(bricks) if not isblocked(grid, brick)]
     return bricks
-
-def isblocked(grid, sx,sy,sz, ex,ey,ez):
-    for x in range(sx, ex+1):
-        for y in range(sy, ey+1):
-            if grid[(x,y,sz-1)]: return True
-    return False
 
 def fill(bricks):
     grid = defaultdict(bool)
     for (sx,sy,sz),(ex,ey,ez) in bricks:
-        for x in range(sx, ex+1):
-            for y in range(sy, ey+1):
-                for z in range(sz, ez+1):
-                    grid[(x,y,z)] = True
+        for x,y,z in product(range(sx, ex+1), range(sy, ey+1), range(sz, ez+1)):
+            grid[(x,y,z)] = True
     return grid
+
+def isblocked(grid, brick):
+    (sx,sy,sz), (ex,ey,ez) = brick
+    return sz == 1 or any(grid[(x,y,sz-1)] for x,y in product(range(sx, ex+1), range(sy, ey+1)))
 
 def solve(bricks):
     supportmap = defaultdict(list)
     reversemap = defaultdict(list)
-    for i in range(len(bricks)):
-        (sx_a, sy_a, sz_a),(ex_a, ey_a, ez_a) = bricks[i]
-        for j in range(len(bricks)):
-            if i != j:
-                (sx_b, sy_b, sz_b),(ex_b, ey_b, ez_b) = bricks[j]
-                if sz_a != ez_b + 1: continue
-                if sx_a <= ex_b and ex_a >= sx_b and sy_a <= ey_b and ey_a >= sy_b:
-                    supportmap[j].append(i)
-                    reversemap[i].append(j)
+    for a,b in product(range(len(bricks)), range(len(bricks))):
+        if a == b: continue
+        (sx_a, sy_a, sz_a),(ex_a, ey_a, ez_a) = bricks[a]
+        (sx_b, sy_b, sz_b),(ex_b, ey_b, ez_b) = bricks[b]
+        if sz_a != ez_b + 1: continue
+        if sx_a <= ex_b and ex_a >= sx_b and sy_a <= ey_b and ey_a >= sy_b:
+            supportmap[b].append(a)
+            reversemap[a].append(b)
     singles = set(reversemap[x][0] for x in reversemap if len(reversemap[x]) == 1)
     a = len(bricks) - len(singles)
-    b = chain(reversemap, singles)
+    b = sum(fallers(supportmap, reversemap, val) for val in singles)
     return a,b
 
-def chain(reversemap, singles):
-    total = 0
-    for x in singles:
-        total += fallers(reversemap, x)
-    return total
-
-def fallers(reversemap, val):
+def fallers(supportmap, reversemap, val):
     clone = deepcopy(reversemap)
-    for x in clone:
-        clone[x] = [v for v in clone[x] if v != val]
+    q = deque((val,))
     fallen = set()
-    changed = 99
-    while changed > 0:
-        changed = 0
-        for x in clone:
-            if x not in fallen and len(clone[x]) == 0:
-                fallen.add(x)
-                changed += 1
-        for x in clone:
-            clone[x] = [v for v in clone[x] if v not in fallen]
+    while q:
+        current = q.popleft()
+        for supporting in supportmap[current]:
+            clone[supporting] = [v for v in clone[supporting] if v != current]
+            if supporting not in fallen and len(clone[supporting]) == 0:
+                fallen.add(supporting)
+                q.append(supporting)
     return len(fallen)
 
 puzzle = Puzzle(2023, 22)
