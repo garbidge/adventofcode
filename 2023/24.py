@@ -9,26 +9,21 @@ def parseline(line):
     return [lmap(int, part.split(', ')) for part in line.split(' @ ')]
 
 def part_a(data):
-    equations = []
-    for [[px, py, pz],[vx, vy, vz]] in data:
-        x1,y1 = px,py
-        x2,y2 = px+vx, py+vy
-        # slope-intercept: y = mx + c
-        m = (y2 - y1) / (x2 - x1)
-        c = y1 - (m * x1)
-        equations.append(((x1,y1),(x2,y2), m, c))
-    intersections = []
+    count = 0
     lower = 200000000000000
     upper = 400000000000000
-    for i in range(len(equations)):
-        for j in range(i + 1, len(equations)):
-            L1 = equations[i]
-            L2 = equations[j]
-            if (intersect := intersection(L1, L2)) != None:
-                x,y = intersect
-                if lower <= x <= upper and lower <= y <= upper:
-                    intersections.append(intersect)
-    return len(intersections)
+    lines = [slope_intercept(x, y, x+dx, y+dy) for [[x,y,_],[dx,dy,_]] in data]
+    pairs = ((L1, L2) for i,L1 in enumerate(lines) for L2 in lines[i+1:])
+    for L1, L2 in pairs:
+        if (xy := intersection(L1, L2)) != None and all(lower <= c <= upper for c in xy):
+            count += 1
+    return count
+
+def slope_intercept(x1,y1,x2,y2):
+    # slope-intercept: y = mx + c
+    m = (y2 - y1) / (x2 - x1)
+    c = y1 - (m * x1)
+    return (((x1,y1),(x2,y2), m, c))
 
 def intersection(L1, L2):
     # y = mx + c
@@ -39,8 +34,7 @@ def intersection(L1, L2):
     if D != 0:
         Dx = c1 - c2
         Dy = (c1 * m2) - (c2 * m1)
-        x = Dx / D
-        y = Dy / D
+        x, y = (Dx / D), (Dy / D)
         if not (inpast(x1_a, x2_a, x) or inpast(x1_b, x2_b, x)):
             return x,y
 
