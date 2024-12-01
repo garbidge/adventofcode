@@ -26,7 +26,7 @@ def part_a(data):
 def part_b(data):
     return 0
 
-puzzle = Puzzle(2023, 2)
+puzzle = Puzzle(2024, 1)
 for i, x in enumerate(puzzle.examples):
     example: Example = x
     print("========================================")
