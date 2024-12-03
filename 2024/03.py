@@ -1,8 +1,8 @@
 from aocd.models import Puzzle
-from utils import flatten,preg
+from utils import flatten, preg
 
 def parse(input):
-    return flatten(preg(input, '(do\(\))|(don\'t\(\))|mul\((\d+),(\d+)\)'))
+    return flatten(preg(input, "(do\(\))|(don't\(\))|mul\((\d+),(\d+)\)"))
 
 def part_a(data):
     return sum(int(a) * int(b) for _,_,a,b in data if a and b)
