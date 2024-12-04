@@ -156,7 +156,7 @@ def neighbrs_diag(coordinate: tuple) -> tuple:
 def neighbrs_str8(coordinate: tuple) -> tuple:
     return [tuple_add(coordinate, d) for d in coord_dirs_str8(len(coordinate))]
 
-def coord_yield_dir(coord: tuple, direction: tuple, condition: Callable[[tuple], bool]):
+def coord_yield_dir(coord: tuple, direction: tuple, condition: Callable[[tuple], bool] = lambda _: True):
     coord = tuple_add(coord, direction)
     while condition(coord):
         yield coord

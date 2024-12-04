@@ -16,7 +16,7 @@ def part_a(data):
     directions = [d for d in coord_dirs(2) if d != (0,0)]
     count = 0
     for xpos, dir in product(coords, directions):
-        path = coord_yield_dir(xpos, dir, lambda _: True)
+        path = coord_yield_dir(xpos, dir)
         if data[next(path)] == 'M' and data[next(path)] == 'A' and data[next(path)] == 'S':
             count += 1
     return count
@@ -26,7 +26,7 @@ def part_b(data):
     directions = coord_dirs_diag(2)
     counts = Counter()
     for mpos, dir in product(coords, directions):
-        path = coord_yield_dir(mpos, dir, lambda _: True)
+        path = coord_yield_dir(mpos, dir)
         if data[(apos := next(path))] == 'A' and data[next(path)] == 'S':
             counts[apos] += 1
     return sum(count > 1 for count in counts.values())
