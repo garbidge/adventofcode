@@ -1,66 +1,36 @@
-from copy import deepcopy
 from aocd.models import Puzzle
 from utils import pgriddict, tuple_add
 
-dirs = [
-    (0,-1),
-    (1,0),
-    (0,1),
-    (-1,0)
-]
+dirs = [(0,-1), (1,0), (0,1), (-1,0)]
 
 def parse(input):
     return pgriddict(input, str)
 
 def part_a(data):
-    return len(work(data))
+    di, pos = 0, next(coord for coord in data if data[coord] == '^')
+    _, path = run_to_end(data, pos, di, set())
+    return len(set(p for p,di in path))
 
 def part_b(data):
-    start = next(coord for coord in data if data[coord] == '^')
-    path = work(data)
+    di, pos = 0, next(coord for coord in data if data[coord] == '^')
+    _, path = run_to_end(data, pos, di, set())
+    distinct = set(p for p,di in path)
     total = 0
-    mx = len(path)
-    for i,point in enumerate(path):
-        if point == start: continue
-        print(i, '/', mx)
-        clone = deepcopy(data)
-        clone[point] = '#'
-        if isloop(clone):
-            total += 1
+    for p in distinct:
+        data[p] = '#'
+        is_cycle, _ = run_to_end(data, pos, di, set())
+        if is_cycle: total += 1
+        data[p] = '.'
     return total
 
-def work(data):
-    pos = next(coord for coord in data if data[coord] == '^')
-    path = set([pos])
-    di = 0
-    while pos in data:
+def run_to_end(data, pos, di, path):
+    while pos in data and (pos, di) not in path:
+        path.add((pos, di))
         nxt = tuple_add(pos, dirs[di])
-        if nxt in data:
-            if data[nxt] == '#':
-                di = (di + 1) % len(dirs)
-            else:
-                pos = nxt
-                path.add(pos)
+        if nxt in data and data[nxt] == '#': di = (di + 1) % len(dirs)
         else: pos = nxt
-    return path
-
-def isloop(data):
-    pos = next(coord for coord in data if data[coord] == '^')
-    di = 0
-    path = set([(pos, dirs[di])])
-    while pos in data:
-        nxt = tuple_add(pos, dirs[di])
-        key = (nxt, dirs[di])
-        if key in path:
-            return True
-        if nxt in data:
-            if data[nxt] == '#':
-                di = (di + 1) % len(dirs)
-            else:
-                pos = nxt
-                path.add(key)
-        else: pos = nxt
-    return False
+    is_cycle = (pos, di) in path
+    return (is_cycle, path)
 
 puzzle = Puzzle(2024, 6)
 data = parse(puzzle.input_data)
