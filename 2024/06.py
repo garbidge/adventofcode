@@ -7,21 +7,27 @@ def parse(input):
     return pgriddict(input, str)
 
 def part_a(data):
-    di, pos = 0, next(coord for coord in data if data[coord] == '^')
-    _, path = run_to_end(data, pos, di, set())
+    pos = next(coord for coord in data if data[coord] == '^')
+    _, path = run_to_end(data, pos, 0, set())
     return len(set(p for p,di in path))
 
 def part_b(data):
-    di, pos = 0, next(coord for coord in data if data[coord] == '^')
-    _, path = run_to_end(data, pos, di, set())
-    distinct = set(p for p,di in path)
-    total = 0
-    for p in distinct:
-        data[p] = '#'
-        is_cycle, _ = run_to_end(data, pos, di, set())
-        if is_cycle: total += 1
-        data[p] = '.'
-    return total
+    pos = next(coord for coord in data if data[coord] == '^')
+    di, path, locations, attempted = 0, set(), set(), set()
+    while pos in data and (pos, di) not in path:
+        path.add((pos, di))
+        nxt = tuple_add(pos, dirs[di])
+        rotated_di = (di + 1) % len(dirs)
+        if nxt in data and data[nxt] == '#': di = rotated_di
+        else:
+            if nxt in data and nxt not in attempted:
+                attempted.add(nxt)
+                data[nxt] = '#'
+                is_cycle, _ = run_to_end(data, pos, rotated_di, set(path))
+                if is_cycle: locations.add(nxt)
+                data[nxt] = '.'
+            pos = nxt
+    return len(locations)
 
 def run_to_end(data, pos, di, path):
     while pos in data and (pos, di) not in path:
