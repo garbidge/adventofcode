@@ -13,7 +13,7 @@ def part_a(data):
 
 def part_b(data):
     pos = next(coord for coord in data if data[coord] == '^')
-    di, path, locations, attempted = 0, set(), set(), set()
+    di, path, locations, attempted = 0, set(), set(), set([pos])
     while pos in data and (pos, di) not in path:
         path.add((pos, di))
         nxt = tuple_add(pos, dirs[di])
