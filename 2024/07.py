@@ -6,10 +6,12 @@ def parse(input):
     return [(n[0], tuple(n[1:])) for n in plint(input)]
 
 def part_a(data):
-    return sum(value for value,numbers in data if matches(value, numbers, [operator.add, operator.mul]))
+    operations = (operator.add, operator.mul)
+    return sum(value for value,numbers in data if matches(value, numbers, operations))
 
 def part_b(data):
-    return sum(value for value,numbers in data if matches(value, numbers, [operator.add, operator.mul, lambda a,b: int(str(a) + str(b))]))
+    operations = (operator.add, operator.mul, lambda a,b: int(str(a) + str(b)))
+    return sum(value for value,numbers in data if matches(value, numbers, operations))
 
 def matches(value, numbers, operations):
     return any(value == p for p in possibles(0, numbers, operations))
