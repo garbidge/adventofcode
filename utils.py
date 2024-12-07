@@ -129,6 +129,10 @@ def chunks(collection: List, size: int):
     for i in range(0, len(collection), size):
         yield collection[i:i+size]
 
+def digits(number: int):
+    if number == 0: return 1
+    return int(math.log10(abs(number))) + 1
+
 # endregion
 
 # region points and grids
