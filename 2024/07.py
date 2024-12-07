@@ -7,11 +7,11 @@ def parse(input):
 
 def part_a(data):
     operations = (operator.add, operator.mul)
-    return sum(value for value,numbers in data if is_match(value, 0, numbers, operations))
+    return sum(value for value,numbers in data if is_match(value, numbers[0], numbers[1:], operations))
 
 def part_b(data):
     operations = (operator.add, operator.mul, lambda a,b: int(str(a) + str(b)))
-    return sum(value for value,numbers in data if is_match(value, 0, numbers, operations))
+    return sum(value for value,numbers in data if is_match(value, numbers[0], numbers[1:], operations))
 
 def is_match(target, current, remaining, operations):
     if current > target:
