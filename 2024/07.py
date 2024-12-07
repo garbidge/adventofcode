@@ -14,14 +14,16 @@ def part_b(data):
     return sum(value for value,numbers in data if matches(value, numbers, operations))
 
 def matches(value, numbers, operations):
-    return any(value == p for p in possibles(0, numbers, operations))
+    return any(value == p for p in possibles(value, 0, numbers, operations))
 
-def possibles(current, remaining, operations):
+def possibles(target, current, remaining, operations):
+    if current > target:
+        return
     if len(remaining) == 0:
         yield current
     else:
         for new_value in (op(current,remaining[0]) for op in operations):
-            yield from possibles(new_value, remaining[1:], operations)
+            yield from possibles(target, new_value, remaining[1:], operations)
 
 puzzle = Puzzle(2024, 7)
 data = parse(puzzle.input_data)
