@@ -98,10 +98,10 @@ def flatten(collection: List[List[Any]]) -> List[Any]:
     return [i for x in collection for i in x]
 
 def tuple_add(tuple_a: tuple, tuple_b: tuple) -> tuple:
-    return tuple(map(lambda a, b: a + b, tuple_a, tuple_b))
+    return tuple(a + b for a,b in zip(tuple_a, tuple_b))
 
 def tuple_sub(tuple_a: tuple, tuple_b: tuple) -> tuple:
-    return tuple(map(lambda a, b: a - b, tuple_a, tuple_b))
+    return tuple(a - b for a,b in zip(tuple_a, tuple_b))
 
 def print_ddict(ddict: DefaultDict[tuple, str]):
     min_x, min_y = mins(ddict)
