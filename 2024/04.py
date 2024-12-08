@@ -1,12 +1,7 @@
 from collections import Counter
 from itertools import product
 from aocd.models import Puzzle
-from utils import (
-    coord_dirs,
-    coord_dirs_diag,
-    coord_yield_dir,
-    pgriddict
-)
+from utils import coord_dirs, coord_dirs_diag, coord_yield_dir, pgriddict
 
 def parse(input):
     return pgriddict(input, str)
