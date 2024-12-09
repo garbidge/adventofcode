@@ -7,11 +7,7 @@ def parse(input):
     return [parseline(line) for line in input.splitlines()]
 
 def parseline(line):
-    disk = []
-    for index in range(len(line)):
-        id = index // 2 if index % 2 == 0 else EMPTY_SPACE
-        for _ in range(int(line[index])): disk.append(id)
-    return disk
+    return [(index // 2 if index % 2 == 0 else EMPTY_SPACE) for index,size in enumerate(line) for _ in range(int(size))]
 
 def part_a(data):
     return sum(checksum(compact([*disk])) for disk in data)
@@ -54,12 +50,12 @@ def contiguous(disk):
     for n in disk:
         if not current or n == current[-1]: current.append(n)
         else:
-            if current: yield current
+            yield current
             current = [n]
-    if current: yield current
+    yield current
 
 def checksum(disk):
-    return sum(i * int(n) for i,n in enumerate(disk) if n != EMPTY_SPACE)
+    return sum(i * id for i,id in enumerate(disk) if id != EMPTY_SPACE)
 
 puzzle = Puzzle(2024, 9)
 data = parse(puzzle.input_data)
