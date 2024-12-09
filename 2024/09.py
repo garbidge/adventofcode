@@ -1,17 +1,16 @@
 from aocd.models import Puzzle
+from utils import flatten
+
+EMPTY_SPACE = -1
 
 def parse(input):
     return [parseline(line) for line in input.splitlines()]
 
 def parseline(line):
     disk = []
-    index = 0
-    while index < len(line):
-        size = int(line[index])
-        character = str(index // 2) if index % 2 == 0 else '.'
-        for _ in range(size):
-            disk.append(character)
-        index += 1
+    for index in range(len(line)):
+        id = index // 2 if index % 2 == 0 else EMPTY_SPACE
+        for _ in range(int(line[index])): disk.append(id)
     return disk
 
 def part_a(data):
@@ -23,49 +22,44 @@ def part_b(data):
 def compact(disk):
     left, right = 0, len(disk)-1
     while left < right:
-        while left < right and disk[left] != '.':
+        while left < right and disk[left] != EMPTY_SPACE:
             left += 1
-        while left < right and disk[right] == '.':
+        while left < right and disk[right] == EMPTY_SPACE:
             right -= 1
         if left < right:
             disk[left], disk[right] = disk[right], disk[left]
     return disk
 
 def compact2(disk):
-    right2 = len(disk)-1
-    while right2 >= 0:
-        while right2 >= 0 and disk[right2] == '.':
-            right2 -= 1
-        right1 = right2
-        while right1 >= 0 and disk[right1] == disk[right2]:
-            right1 -= 1
-        size = right2 - right1
-        if disk[right2] != '.' and (start_index := findblock(disk, size)) != None and start_index < right1:
-            character = disk[right2]
-            for i in range(size):
-                disk[start_index + i] = character
-                disk[right1 + 1 + i] = '.'
-        else:
-            right2 = right1
-    return disk
+    disk_blocks = [*contiguous(disk)]
+    right = len(disk_blocks) - 1
+    while right > 0:
+        left = 0
+        while right > 0 and disk_blocks[right][0] == EMPTY_SPACE:
+            right -= 1
+        while left < right and (disk_blocks[left][0] != EMPTY_SPACE or len(disk_blocks[left]) < len(disk_blocks[right])):
+            left += 1
+        if left < right:
+            size_left, size_right = len(disk_blocks[left]), len(disk_blocks[right])
+            inserted = [*disk_blocks[right]]
+            for i in range(size_right): disk_blocks[right][i] = EMPTY_SPACE
+            if size_right == size_left: disk_blocks.pop(left)
+            else: disk_blocks[left] = disk_blocks[left][size_right:]
+            disk_blocks.insert(left, inserted)
+        right -= 1
+    return flatten(disk_blocks)
 
-def findblock(disk, size):
-    index = 0
-    while index < len(disk):
-        if disk[index] == '.':
-            end = index
-            while end < len(disk) and disk[end] == '.':
-                end += 1
-            blocksize = end - index
-            if blocksize >= size:
-                return index
-            else:
-                index = end
+def contiguous(disk):
+    current = []
+    for n in disk:
+        if not current or n == current[-1]: current.append(n)
         else:
-            index += 1
+            if current: yield current
+            current = [n]
+    if current: yield current
 
 def checksum(disk):
-    return sum(i * int(n) for i,n in enumerate(disk) if n != '.')
+    return sum(i * int(n) for i,n in enumerate(disk) if n != EMPTY_SPACE)
 
 puzzle = Puzzle(2024, 9)
 data = parse(puzzle.input_data)
