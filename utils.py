@@ -70,12 +70,12 @@ def pgrpints(input: str) -> List[List[List[int]]]:
 def pgridint(input: str) -> List[List[int]]:
     return [[int(n) for n in line] for line in input.splitlines()]
 
-def pgriddict(input: str, defaultFunc: Callable, valueFunc: Callable = lambda x: x):
+def pgriddict(input: str, defaultFunc: Callable):
     ddict = defaultdict(defaultFunc)
     lines = input.splitlines()
     for row in range(len(lines)):
         for col in range(len(lines[row])):
-            ddict[(col, row)] = valueFunc(lines[row][col])
+            ddict[(col, row)] = defaultFunc(lines[row][col])
     return ddict
 
 def preg(input: str, pattern: str) -> List[List[Any]]:

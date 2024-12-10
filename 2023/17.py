@@ -6,7 +6,7 @@ directions = ['l','u','r','d']
 dirmap = {'u': (0,-1), 'd': (0,1), 'l': (-1,0), 'r': (1, 0)}
 
 def parse(input):
-    return pgriddict(input, int, lambda v: int(v))
+    return pgriddict(input, int)
 
 def part_a(data):
     h = []

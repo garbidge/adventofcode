@@ -3,7 +3,7 @@ from aocd.models import Puzzle
 from utils import neighbrs_str8, pgriddict
 
 def parse(input):
-    return pgriddict(input, int, int)
+    return pgriddict(input, int)
 
 def solve(grid):
     heads = [c for c in grid if grid[c] == 0]
