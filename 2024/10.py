@@ -1,4 +1,5 @@
 from collections import deque
+from functools import reduce
 from aocd.models import Puzzle
 from utils import neighbrs_str8, pgriddict
 
@@ -7,24 +8,19 @@ def parse(input):
 
 def solve(grid):
     heads = [c for c in grid if grid[c] == 0]
-    path_groups = [find_paths(grid, head) for head in heads]
-    a = sum(len(exits) for _,exits in path_groups)
-    b = sum(len(paths) for paths,_ in path_groups)
-    return a,b
+    counts = [path_counts(grid, head) for head in heads]
+    return sum(a for a,_ in counts), sum(b for _,b in counts)
 
-def find_paths(grid, head):
-    q = deque([(head,)])
-    paths, exits = set(), set()
+def path_counts(grid, head):
+    q = deque([(head, set())])
+    exits = list()
     while q:
-        path = q.popleft()
-        for n in neighbrs_str8(path[-1]):
-            if n in grid and n not in path and grid[n] == grid[path[-1]] + 1:
-                npath = tuple([*path, n])
-                if grid[n] == 9:
-                    paths.add(npath)
-                    exits.add(n)
-                else: q.append(npath)
-    return (paths, exits)
+        coord, visited = q.popleft()
+        for n in neighbrs_str8(coord):
+            if n in grid and n not in visited and grid[n] == grid[coord] + 1:
+                if grid[n] == 9: exits.append(n)
+                else: q.append((n, {*visited, n}))
+    return (len(set(exits)), len(exits))
 
 puzzle = Puzzle(2024, 10)
 data = parse(puzzle.input_data)
