@@ -3,30 +3,26 @@ from aocd.models import Puzzle
 from utils import digits, ints
 
 def parse(input):
-    amounts = defaultdict(int)
-    for n in ints(input):
-        amounts[n] += 1
-    return amounts
+    stones = defaultdict(int)
+    for n in ints(input): stones[n] += 1
+    return stones
 
-def simulate(amounts, count):
-    for _ in range(count):
-        amounts = blink(amounts)
-    return sum(amounts.values())
+def simulate(stones, count):
+    for _ in range(count): stones = blink(stones)
+    return sum(stones.values())
 
-def blink(amounts):
+def blink(stones):
     new = defaultdict(int)
-    for n in amounts:
-        value = amounts[n]
-        if value > 0:
-            if n == 0:
-                new[1] += value
-            elif (count := digits(n)) % 2 == 0:
-                divisor = pow(10, count // 2)
-                left, right = n // divisor, n % divisor
-                new[left] += value
-                new[right] += value
-            else:
-                new[n * 2024] += value
+    for stone,amount in stones.items():
+        if stone == 0:
+            new[1] += amount
+        elif (digit_count := digits(stone)) % 2 == 0:
+            divisor = pow(10, digit_count // 2)
+            left, right = stone // divisor, stone % divisor
+            new[left] += amount
+            new[right] += amount
+        else:
+            new[stone * 2024] += amount
     return new
 
 puzzle = Puzzle(2024, 11)
