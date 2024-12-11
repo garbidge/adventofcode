@@ -1,18 +1,16 @@
-from collections import defaultdict
+from collections import Counter
 from aocd.models import Puzzle
 from utils import digits, ints
 
 def parse(input):
-    stones = defaultdict(int)
-    for n in ints(input): stones[n] += 1
-    return stones
+    return Counter(ints(input))
 
 def simulate(stones, count):
     for _ in range(count): stones = blink(stones)
     return sum(stones.values())
 
 def blink(stones):
-    new = defaultdict(int)
+    new = Counter()
     for stone,amount in stones.items():
         if stone == 0:
             new[1] += amount
