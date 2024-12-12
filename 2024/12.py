@@ -4,48 +4,47 @@ from utils import coord_dirs_str8, coord_yield_dir, neighbrs_str8, pgriddict, tu
 
 def parse(input):
     grid = pgriddict(input, str)
-    return find_regions(grid)
-
-def part_a(regions):
-    return sum(len(region) * perimeter for region,perimeter in regions)
-
-def part_b(regions):
-    total = 0
-    for region,_ in regions:
-        sides = 0
-        for (dx,dy) in coord_dirs_str8(2):
-            visited = set()
-            for coord in region:
-                n = tuple_add(coord, (dx,dy))
-                if n not in region and n not in visited:
-                    visited.add(n)
-                    sides += 1
-                    for parallel in ((dy,dx), (-dy,-dx)):
-                        for same_side in coord_yield_dir(coord, parallel, lambda c: c in region and tuple_add(c, (dx,dy)) not in region):
-                            visited.add(tuple_add(same_side, (dx,dy)))
-        total += len(region) * sides
-    return total
-
-def find_regions(data):
     regions = list()
-    for coord in data:
-        if not any(coord in region for region,_ in regions):
-            regions.append(find_region(data, coord))
+    for coord in grid:
+        if not any(coord in region for region,_,_ in regions):
+            regions.append(find_region(grid, coord))
     return regions
 
-def find_region(data, coord):
-    points = set((coord,))
-    perimeter = 0
+def part_a(regions):
+    return sum(len(region) * perimeter for region,perimeter,_ in regions)
+
+def part_b(regions):
+    return sum(len(region) * sides for region,_,sides in regions)
+
+def find_region(grid, coord):
+    points, perimeter, sides = set((coord,)), 0, 0
     q = deque([coord])
+    directions = coord_dirs_str8(2)
+    side_map = {d: set() for d in directions}
     while q:
         point = q.popleft()
-        for n in neighbrs_str8(point):
-            if n not in data or data[n] != data[coord]:
+        for direction in directions:
+            n = tuple_add(point, direction)
+            if n not in grid or grid[n] != grid[coord]:
                 perimeter += 1
+                sides += add_edges(grid, side_map[direction], point, *direction)
             elif n not in points:
                 points.add(n)
                 q.append(n)
-    return (points, perimeter)
+    return (points, perimeter, sides)
+
+def add_edges(grid, edge_set, coord, dx, dy):
+    if coord not in edge_set:
+        edge_set.add(coord)
+        for parallel in ((dy,dx), (-dy,-dx)):
+            for same_side in coord_yield_dir(coord, parallel, lambda point: is_matching(grid, coord, point, (dx,dy))):
+                edge_set.add(same_side)
+        return 1
+    return 0
+
+def is_matching(grid, original_coord, point, direction):
+    adjacent = tuple_add(point, direction)
+    return point in grid and grid[point] == grid[original_coord] and (adjacent not in grid or grid[adjacent] != grid[original_coord])
 
 puzzle = Puzzle(2024, 12)
 data = parse(puzzle.input_data)
