@@ -16,9 +16,8 @@ def blink(stones):
             new[1] += amount
         elif (digit_count := digits(stone)) % 2 == 0:
             divisor = pow(10, digit_count // 2)
-            left, right = stone // divisor, stone % divisor
-            new[left] += amount
-            new[right] += amount
+            new[stone // divisor] += amount
+            new[stone % divisor] += amount
         else:
             new[stone * 2024] += amount
     return new
