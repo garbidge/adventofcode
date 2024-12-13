@@ -34,7 +34,6 @@ for i, x in enumerate(puzzle.examples):
     print(example.input_data, "\n")
     parsed = parse(example.input_data)
     a = part_a(parsed)
-    b = part_b(parsed)
     print(
         "a",
         example.answer_a,
@@ -43,6 +42,7 @@ for i, x in enumerate(puzzle.examples):
         if example.answer_a == str(a)
         else colored("INCORRECT", "red"),
     )
+    b = part_b(parsed)
     print(
         "b",
         example.answer_b,
