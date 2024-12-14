@@ -24,9 +24,9 @@ def solve(button_a, button_b, prize):
     # linear equations
     # ax * A + bx * B = px
     # ay * A + by * B = py
-    B = (py * ax - ay * px) / (ax * by - ay * bx)
-    A = (px - bx * B) / ax
-    if int(A) == A and int(B) == B:
+    B, mod_b = divmod((py * ax - ay * px), (ax * by - ay * bx))
+    A, mod_a = divmod((px - bx * B), ax)
+    if mod_a == 0 and mod_b == 0:
         return int(A * 3 + B)
 
 puzzle = Puzzle(2024, 13)
