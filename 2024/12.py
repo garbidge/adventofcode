@@ -1,6 +1,6 @@
 from collections import deque
 from aocd.models import Puzzle
-from utils import coord_dirs_str8, coord_yield_dir, neighbrs_str8, pgriddict, tuple_add
+from utils import coord_dirs_str8, coord_yield_dir, pgriddict, tuple_add
 
 def parse(input):
     grid = pgriddict(input, str)
