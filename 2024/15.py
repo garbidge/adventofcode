@@ -12,7 +12,7 @@ def parse(input):
     warehouse, movements = input.split('\n\n')
     return pgriddict(warehouse, str), flatten(movements.splitlines())
 
-def parse_wide(input: str):
+def parse_wide(input):
     warehouse, movements = input.split('\n\n')
     warehouse = warehouse.replace('#', '##').replace('O', '[]').replace('.', '..').replace('@', '@.')
     return pgriddict(warehouse, str), flatten(movements.splitlines())
@@ -46,23 +46,21 @@ def part_b(warehouse, movements):
         else:
             locations = [set(get_pushed(warehouse, location, move, direction))]
             while not any(warehouse[c] == '#' for c in locations[-1]) and not all(warehouse[c] == '.' for c in locations[-1]):
-                locations.append(set(flatten(get_pushed(warehouse, c, move, direction) for c in locations[-1] if warehouse[c] in ['[',']'])))
+                locations.append(set(flatten(get_pushed(warehouse, c, move, direction) for c in locations[-1] if warehouse[c] in '[]')))
             if all(warehouse[c] == '.' for c in locations[-1]):
                 for pushed in reversed(locations[:-1]):
                     for coord in pushed:
-                        if warehouse[coord] in ['[',']']:
+                        if warehouse[coord] in '[]':
                             warehouse[tuple_add(coord, direction)] = warehouse[coord]
                             warehouse[coord] = '.'
                 location = nxt
     return sum(100 * y + x for x,y in warehouse if warehouse[(x,y)] == '[')
 
 def get_pushed(warehouse, coord, move, direction):
-    direct = tuple_add(coord, direction)
-    yield direct
-    if move in ('^','v'):
-        if warehouse[direct] in ('[',']'):
-            dx = 1 if warehouse[direct] == '[' else -1
-            yield tuple_add(direct, (dx,0))
+    yield (direct := tuple_add(coord, direction))
+    if move in '^v' and warehouse[direct] in '[]':
+        dx = 1 if warehouse[direct] == '[' else -1
+        yield tuple_add(direct, (dx,0))
 
 puzzle = Puzzle(2024, 15)
 print("part A", part_a(*parse(puzzle.input_data)))
