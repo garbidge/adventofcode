@@ -13,7 +13,7 @@ def part_b(registers, program):
     for n in reversed(program):
         total <<= 3
         registers[0] = total
-        while run(registers, program)[0] != n:
+        while not all(a == b for a,b in zip(reversed(run(registers, program)), reversed(program))):
             total += 1
             registers[0] = total
     return total
