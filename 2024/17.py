@@ -13,11 +13,9 @@ def part_b(registers, program):
     for n in reversed(program):
         total <<= 3
         registers[0] = total
-        result = run(registers, program)
-        while result[0] != n:
+        while run(registers, program)[0] != n:
             total += 1
             registers[0] = total
-            result = run(registers, program)
     return total
 
 def run(registers, program):
@@ -26,23 +24,21 @@ def run(registers, program):
     pointer = 0
     while pointer < len(program):
         instr, operand = program[pointer], program[pointer+1]
-        if instr == 0: reg[0] = int(reg[0] / pow(2, combo(reg, operand)))
-        elif instr == 1: reg[1] = reg[1] ^ operand
-        elif instr == 2: reg[1] = combo(reg, operand) % 8
-        elif instr == 3:
-            if reg[0] != 0:
-                pointer = operand - 2
-        elif instr == 4: reg[1] = reg[1] ^ reg[2]
-        elif instr == 5:
-            output.append(combo(reg, operand) % 8)
-        elif instr == 6: reg[1] = int(reg[0] / pow(2, combo(reg, operand)))
-        elif instr == 7: reg[2] = int(reg[0] / pow(2, combo(reg, operand)))
+        match instr:
+            case 0: reg[0] //= 2 ** combo(reg, operand)
+            case 1: reg[1] ^= operand
+            case 2: reg[1] = combo(reg, operand) % 8
+            case 3: 
+                if reg[0] != 0: pointer = operand - 2
+            case 4: reg[1] ^= reg[2]
+            case 5: output.append(combo(reg, operand) % 8)
+            case 6: reg[1] = reg[0] // 2 ** combo(reg, operand)
+            case 7: reg[2] = reg[0] // 2 ** combo(reg, operand)
         pointer += 2
     return output
 
 def combo(registers, n):
-    if n <= 3: return n
-    return registers[n-4]
+    return n if n <= 3 else registers[n-4]
 
 puzzle = Puzzle(2024, 17)
 data = parse(puzzle.input_data)
