@@ -10,18 +10,16 @@ def part_a(registers, program):
 
 def part_b(registers, program):
     total = 0
-    for n in reversed(program):
+    for _ in range(len(program)):
         total <<= 3
         registers[0] = total
         while not all(a == b for a,b in zip(reversed(run(registers, program)), reversed(program))):
-            total += 1
-            registers[0] = total
+            registers[0] = total = total + 1
     return total
 
 def run(registers, program):
     reg = [n for n in registers]
-    output = []
-    pointer = 0
+    pointer, output = 0, []
     while pointer < len(program):
         instr, operand = program[pointer], program[pointer+1]
         match instr:
