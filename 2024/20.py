@@ -1,4 +1,3 @@
-from collections import Counter, deque
 from aocd.models import Puzzle
 from utils import neighbrs_str8, pgriddict
 
@@ -6,17 +5,13 @@ def parse(input):
     return pgriddict(input, str)
 
 def find_path(grid):
-    start = next(c for c in grid if grid[c] == 'S')
-    q = deque([(start, [start])])
-    visited = set()
-    while q:
-        coord, path = q.popleft()
-        if grid[coord] == 'E': return path
-        elif coord not in visited:
-            visited.add(coord)
-            for n in neighbrs_str8(coord):
-                if n in grid and grid[n] != '#':
-                    q.append((n, [*path,n]))
+    coord = next(c for c in grid if grid[c] == 'S')
+    path, visited = [coord], set([coord])
+    while grid[coord] != 'E':
+        coord = next(c for c in neighbrs_str8(coord) if c not in visited and grid[c] != '#')
+        path.append(coord)
+        visited.add(coord)
+    return path
 
 def cheat(path, distance):
     total = 0
