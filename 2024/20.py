@@ -12,10 +12,13 @@ def find_path(grid):
 
 def cheat_paths(distances, path):
     total_a, total_b = 0, 0
-    for n in path[:-1]:
-        for c,dist in coords_within_dist(*n, 20):
+    window = tuple(coords_within_dist(*path[0], 20))
+    for ((x1,y1),(x2,y2)) in zip([path[0], *path], path):
+        dx,dy = x2-x1, y2-y1
+        window = tuple(((x+dx,y+dy), dist) for (x,y),dist in window)
+        for c,dist in window:
             if c in distances:
-                time_saved = distances[c] - distances[n] - dist
+                time_saved = distances[c] - distances[(x2,y2)] - dist
                 if time_saved >= 100:
                     if dist <= 2: total_a += 1
                     total_b += 1
