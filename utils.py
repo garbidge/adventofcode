@@ -133,6 +133,9 @@ def digits(number: int):
     if number == 0: return 1
     return int(math.log10(abs(number))) + 1
 
+def sign(x):
+    return (x > 0) - (x < 0)
+
 # endregion
 
 # region points and grids
