@@ -1,5 +1,6 @@
 from collections import defaultdict, deque
 from aocd.models import Puzzle
+from utils import flatten
 
 OPERATIONS = {
     'AND': lambda a,b: a & b,
@@ -40,18 +41,15 @@ def part_b(gates):
                     c1 = reverse_lookup[frozenset((xi,'AND',yi))]
                     c2 = reverse_lookup[frozenset((bit,'AND',carry))]
                     carry = reverse_lookup[frozenset((c1,'OR',c2))]
-            if not adder:
-                a,op,b = lookup[zi]
-                if frozenset((a,'XOR',carry)) in reverse_lookup:
-                    swap(pairs, gates, bit, a)
+                else:
+                    a,op,b = lookup[zi]
+                    expected = next(n for n in (a,b) if n != carry)
+                    swap(pairs, gates, bit, expected)
                     break
-                elif frozenset((b,'XOR',carry)) in reverse_lookup:
-                    swap(pairs, gates, bit, b)
-                    break
-            elif adder != zi:
+            if adder != zi:
                 swap(pairs, gates, adder, zi)
                 break
-    return ','.join(sorted([x for y in pairs for x in y]))
+    return ','.join(sorted(flatten(pairs)))
 
 def swap(pairs, gates, a, b):
     pairs.append((a,b))
