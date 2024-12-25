@@ -43,8 +43,9 @@ def part_b(gates):
                     carry = reverse_lookup[frozenset((c1,'OR',c2))]
                 else:
                     a,op,b = lookup[zi]
-                    expected = next(n for n in (a,b) if n != carry)
-                    swap(pairs, gates, bit, expected)
+                    expected = {a,b} - {bit,carry}
+                    actual = {bit,carry} - {a,b}
+                    swap(pairs, gates, actual.pop(), expected.pop())
                     break
             if adder != zi:
                 swap(pairs, gates, adder, zi)
