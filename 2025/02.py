@@ -1,38 +1,43 @@
 from aocd.models import Puzzle
 
+from utils import digits
+
 def parse(input):
     ranges = [p.split('-') for p in input.strip().split(',')]
-    return [[int(n) for n in number_pair] for number_pair in ranges]
+    return [tuple(int(n) for n in pair) for pair in ranges]
 
+def solve(data):
+    a = b = 0
+    for lower,upper in data:
+        for n in generate_ids(lower, upper):
+            if has_two_parts(str(n)): a += n
+            b += n
+    return a,b
 
-def part_a(data):
-    total = 0
-    for a,b in data:
-        count = 0
-        for n in range(a, b+1):
-            text = str(n)
-            if len(text) % 2 != 0:
-                continue
-            mid = len(text) // 2
-            if text[:mid] == text[mid:]:
-                count += n
-        total += count
-    return total
+def has_two_parts(number_string):
+    mid = len(number_string) // 2
+    return len(number_string) % 2 == 0 and number_string[:mid] == number_string[mid:]
 
-def part_b(data):
-    total = 0
-    for a,b in data:
-        for n in range(a, b+1):
-            text = str(n)
-            for length in range(1, len(text)//2 + 1):
-                if len(text) % length == 0:
-                    parts = [text[i:i+length] for i in range(0, len(text), length)]
-                    if len(set(parts)) == 1:
-                        total += n
-                        break
-    return total
+def generate_ids(lower, upper):
+    lower_digits, upper_digits = digits(lower), digits(upper)
+    number = 1
+    while int((text := str(number)) * 2) <= upper:
+        if not has_repeating_pattern(text):
+            for n in range(lower_digits, upper_digits + 1):
+                if n % len(text) == 0:
+                    value = int(text * (n // len(text)))
+                    if lower <= value <= upper:
+                        yield value
+        number += 1
+
+def has_repeating_pattern(text):
+    return any(
+        len(text) % n == 0 and text[:n] * (len(text) // n) == text
+        for n in range(1, len(text) // 2 + 1)
+    )
 
 puzzle = Puzzle(2025, 2)
 data = parse(puzzle.input_data)
-print("part A", part_a(data))
-print("part B", part_b(data))
+a,b = solve(data)
+print("part A", a)
+print("part B", b)
