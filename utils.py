@@ -130,8 +130,8 @@ def chunks(collection: List, size: int):
         yield collection[i:i+size]
 
 def digits(number: int):
-    if number == 0: return 1
-    return int(math.log10(abs(number))) + 1
+    s = str(number)
+    return len(s) - (1 if number < 0 else 0)
 
 def sign(x: int):
     return (x > 0) - (x < 0)

@@ -1,8 +1,9 @@
 from aocd.models import Puzzle
 
 def parse(input):
-    parts = [p.split('-') for p in input.strip().split(',')]
-    return [[int(n) for n in part] for part in parts]
+    ranges = [p.split('-') for p in input.strip().split(',')]
+    return [[int(n) for n in number_pair] for number_pair in ranges]
+
 
 def part_a(data):
     total = 0
