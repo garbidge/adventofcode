@@ -7,8 +7,8 @@ def solve(data):
     a, b, dial = 0, 0, 50
     for num in data:
         b += revolutions(dial, num)
-        dial = (num + dial) % 100
-        a += int(dial == 0)
+        dial = (dial + num) % 100
+        a += dial == 0
     return a, b
 
 def revolutions(start, rotations):
