@@ -16,7 +16,7 @@ def solve(data):
 
 def has_two_parts(number_string):
     mid = len(number_string) // 2
-    return len(number_string) % 2 == 0 and number_string[:mid] == number_string[mid:]
+    return number_string[:mid] == number_string[mid:]
 
 def generate_ids(lower, upper):
     lower_digits, upper_digits = digits(lower), digits(upper)
@@ -31,10 +31,7 @@ def generate_ids(lower, upper):
         number += 1
 
 def has_repeating_pattern(text):
-    return any(
-        len(text) % n == 0 and text[:n] * (len(text) // n) == text
-        for n in range(1, len(text) // 2 + 1)
-    )
+    return any(text[:n] * (len(text) // n) == text for n in range(1, len(text) // 2 + 1))
 
 puzzle = Puzzle(2025, 2)
 data = parse(puzzle.input_data)
