@@ -8,12 +8,6 @@ def parse(input):
         for coord in grid if grid[coord] == "@"
     }
 
-def part_a(data):
-    return step(data)
-
-def part_b(data):
-    return sum(iter(lambda: step(data), 0))
-
 def step(data):
     removed = [c for c in data if data[c] < 4]
     for coord in removed:
@@ -24,5 +18,5 @@ def step(data):
 
 puzzle = Puzzle(2025, 4)
 data = parse(puzzle.input_data)
-print("part A", part_a(data.copy()))
-print("part B", part_b(data.copy()))
+print("part A", step(data.copy()))
+print("part B", sum(iter(lambda: step(data), 0)))
