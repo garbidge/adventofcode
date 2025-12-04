@@ -18,5 +18,5 @@ def step(data):
 
 puzzle = Puzzle(2025, 4)
 data = parse(puzzle.input_data)
-print("part A", step(data.copy()))
+print("part A", len([c for c in data if data[c] < 4]))
 print("part B", sum(iter(lambda: step(data), 0)))
