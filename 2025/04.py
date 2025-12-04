@@ -1,8 +1,5 @@
 from aocd.models import Puzzle
-from utils import (
-    neighbrs,
-    pgriddict,
-)
+from utils import pgriddict, neighbrs
 
 def parse(input):
     grid = pgriddict(input, str)
@@ -15,18 +12,14 @@ def part_a(data):
     return step(data)
 
 def part_b(data):
-    total = 0
-    while (removed := step(data)) > 0:
-        total += removed
-    return total
+    return sum(iter(lambda: step(data), 0))
 
 def step(data):
     removed = [c for c in data if data[c] < 4]
     for coord in removed:
         del data[coord]
         for n in neighbrs(coord):
-            if n in data:
-                data[n] -= 1
+            if n in data: data[n] -= 1
     return len(removed)
 
 puzzle = Puzzle(2025, 4)
