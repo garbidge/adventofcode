@@ -5,32 +5,31 @@ from utils import (
 )
 
 def parse(input):
-    return pgriddict(input, str)
+    grid = pgriddict(input, str)
+    return {
+        coord: sum(n in grid and grid[n] == "@" for n in neighbrs(coord))
+        for coord in grid if grid[coord] == "@"
+    }
 
 def part_a(data):
-    removed, _ = step(data)
-    return removed
+    return step(data)
 
 def part_b(data):
     total = 0
-    removed, data = step(data)
-    while removed > 0:
+    while (removed := step(data)) > 0:
         total += removed
-        removed, data = step(data)
     return total
 
 def step(data):
-    new_data = data.copy()
-    removed = 0
-    for coord in data:
-        if data[coord] == "@":
-            neighbouring = sum(x in data and data[x] == "@" for x in neighbrs(coord))
-            if neighbouring < 4:
-                new_data[coord] = "."
-                removed += 1
-    return removed, new_data
+    removed = [c for c in data if data[c] < 4]
+    for coord in removed:
+        del data[coord]
+        for n in neighbrs(coord):
+            if n in data:
+                data[n] -= 1
+    return len(removed)
 
 puzzle = Puzzle(2025, 4)
 data = parse(puzzle.input_data)
-print("part A", part_a(data))
-print("part B", part_b(data))
+print("part A", part_a(data.copy()))
+print("part B", part_b(data.copy()))
