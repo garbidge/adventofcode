@@ -7,7 +7,7 @@ def parse(input):
     return ranges, ids
 
 def part_a(ranges, ids):
-    return sum(1 for i in ids if any(r[0] <= i <= r[1] for r in ranges))
+    return sum(any(r[0] <= i <= r[1] for r in ranges) for i in ids)
 
 def part_b(ranges, _):
     contiguous = []
@@ -18,11 +18,11 @@ def part_b(ranges, _):
         contiguous.append(rng)
     return sum(r[1] - r[0] + 1 for r in contiguous)
 
-def overlaps(range1, range2):
-    return not (range1[1] < range2[0] or range2[1] < range1[0])
+def overlaps(a, b):
+    return not (a[1] < b[0] or b[1] < a[0])
 
-def merge(range1, range2):
-    return (min(range1[0], range2[0]), max(range1[1], range2[1]))
+def merge(a, b):
+    return (min(a[0], b[0]), max(a[1], b[1]))
 
 puzzle = Puzzle(2025, 5)
 data = parse(puzzle.input_data)
