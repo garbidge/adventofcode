@@ -2,18 +2,17 @@ import itertools
 import math
 from aocd.models import Puzzle
 
-def transpose(x):
-    return list(map(''.join, zip(*x)))
+from utils import transpose_str
 
 def solve(input):
     ops = {'+': sum, '*': math.prod}
     *numbers, operators = input.splitlines()
-    numbers, operators =  transpose(numbers), operators.split()
+    numbers, operators =  transpose_str(numbers), operators.split()
     numbers = [list(group) for key,group in itertools.groupby(numbers, lambda x: x.strip() == '') if not key]
     a = b = 0
     for i,nums in enumerate(numbers):
         vertical = [int(n) for n in nums]
-        horizontal = [int(n) for n in transpose(nums)]
+        horizontal = [int(n) for n in transpose_str(nums)]
         operator = ops[operators[i]]
         a += operator(horizontal)
         b += operator(vertical)
