@@ -111,8 +111,8 @@ def print_ddict(ddict: DefaultDict[tuple, str]) -> None:
             print(ddict[(x, y)], end="")
         print()
 
-def transpose(iterable: Iterable[Sequence[Any]]) -> List[List[Any]]:
-    return lmap(list, zip(*iterable))
+def transpose(iterable: Iterable[Sequence[Any]], mappingFunc: Callable = list) -> List[List[Any]]:
+    return lmap(mappingFunc, zip(*iterable))
 
 def transpose_str(collection: List[str]) -> List[str]:
     return [''.join(collection[r][c] for r in range(len(collection))) for c in range(len(collection[0]))]
