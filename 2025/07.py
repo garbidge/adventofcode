@@ -2,20 +2,20 @@ from aocd.models import Puzzle
 
 def solve(input):
     grid = input.splitlines()
-    splitters = set()
+    splitters = 0
     counts = [c == 'S' for c in grid[0]]
-    for y,line in enumerate(grid[1:], 1):
-        current = [0 for _ in counts]
-        for x,char in enumerate(line):
-            if (count := counts[x]):
+    for line in grid[1:]:
+        current = [0] * len(counts)
+        for i,char in enumerate(line):
+            if (count := counts[i]):
                 if char == '^':
-                    splitters.add((x, y))
-                    current[x - 1] += count
-                    current[x + 1] += count
+                    splitters += 1
+                    current[i - 1] += count
+                    current[i + 1] += count
                 else:
-                    current[x] += count
+                    current[i] += count
         counts = current
-    return len(splitters), sum(counts)
+    return splitters, sum(counts)
 
 puzzle = Puzzle(2025, 7)
 a,b = solve(puzzle.input_data)
