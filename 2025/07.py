@@ -1,20 +1,21 @@
-from collections import Counter
 from aocd.models import Puzzle
 
 def solve(input):
     grid = input.splitlines()
     splitters = set()
-    counts = Counter({(grid[0].index('S'), 0): 1})
-    for y,line in enumerate(grid):
+    counts = [c == 'S' for c in grid[0]]
+    for y,line in enumerate(grid[1:], 1):
+        current = [0 for _ in counts]
         for x,char in enumerate(line):
-            if (x, y - 1) in counts:
+            if (count := counts[x]):
                 if char == '^':
                     splitters.add((x, y))
-                    counts[(x - 1, y)] += counts[(x, y - 1)]
-                    counts[(x + 1, y)] += counts[(x, y - 1)]
+                    current[x - 1] += count
+                    current[x + 1] += count
                 else:
-                    counts[(x, y)] += counts[(x, y - 1)]
-    return len(splitters), sum(count for (x,y),count in counts.items() if y == len(grid) - 1)
+                    current[x] += count
+        counts = current
+    return len(splitters), sum(counts)
 
 puzzle = Puzzle(2025, 7)
 a,b = solve(puzzle.input_data)
