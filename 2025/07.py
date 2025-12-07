@@ -1,54 +1,27 @@
-from collections import Counter, deque
+from collections import Counter
 from aocd.models import Puzzle
-from utils import pgriddict, tuple_add
+from utils import pgriddict
 
 def parse(input):
     return pgriddict(input, str)
 
-def part_a(data):
-    start = next(c for c in data if data[c] == "S")
-    q = deque([start])
+def solve(data):
     splitters = set()
-    visited = set()
-    while q:
-        current = q.popleft()
-        if current in visited:
-            continue
-        visited.add(current)
-        down = tuple_add(current, (0, 1))
-        if down in data:
-            if data[down] == '^':
-                splitters.add(down)
-                q.append(tuple_add(down, (-1, 0)))
-                q.append(tuple_add(down, (1, 0)))
+    counts = Counter({next(c for c in data if data[c] == "S"): 1})
+    max_y = 0
+    for x,y in sorted(data, key=lambda xy: xy[1]):
+        max_y = y
+        if (x, y - 1) in counts:
+            if data[(x, y)] == '^':
+                splitters.add((x, y))
+                counts[(x - 1, y)] += counts[(x, y - 1)]
+                counts[(x + 1, y)] += counts[(x, y - 1)]
             else:
-                q.append(down)
-    return len(splitters)
-
-def part_b(data):
-    start = next(c for c in data if data[c] == "S")
-    q = deque([start])
-    counts = Counter()
-    counts[start] = 1
-    visited = set()
-    max_y = max(y for x,y in data)
-    while q:
-        (x,y) = q.popleft()
-        if (x,y) in visited:
-            continue
-        visited.add((x,y))
-        if (x, y+1) in data:
-            if data[(x, y+1)] == '^':
-                q.append((x-1, y+1))
-                q.append((x+1, y+1))
-                counts[(x-1, y+1)] += counts[(x, y)]
-                counts[(x+1, y+1)] += counts[(x, y)]
-            else:
-                q.append((x, y+1))
-                counts[(x, y+1)] += counts[(x, y)]
-    return sum(v for k,v in counts.items() if k[1] == max_y)
+                counts[(x, y)] += counts[(x, y - 1)]
+    return len(splitters), sum(count for (x,y),count in counts.items() if y == max_y)
 
 puzzle = Puzzle(2025, 7)
 data = parse(puzzle.input_data)
-print("part A", part_a(data))
-print("part B", part_b(data))
+a,b = solve(data)
+print("part A", a)
+print("part B", b)
