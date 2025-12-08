@@ -4,45 +4,38 @@ from aocd.models import Puzzle
 def parse(input):
     return [tuple(int(n) for n in line.split(",")) for line in input.splitlines()]
 
-def part_a(data):
+def solve(data):
+    a, b, dist_map = 0, 0, map_distances(data)
+    ordered = sorted(dist_map, key=lambda indexpair: dist_map[indexpair])
+    circuits = [set([pos]) for pos in data]
+    for count,(i,j) in enumerate(ordered):
+        if count == 1000:
+            a = math.prod(sorted([len(x) for x in circuits], reverse=True)[:3])
+        combine_sets(circuits, data[i], data[j])
+        if len(circuits) == 1:
+            break
+    (x1,y1,z1) = data[i]
+    (x2,y2,z2) = data[j]
+    b = x1 * x2
+    return a,b
+
+def map_distances(data):
     dist_map = {}
     for i,pos in enumerate(data):
         for j,other in enumerate(data[i+1:], start=i+1):
             dist_map[(i,j)] = math.dist(pos, other)
-    ordered = sorted(dist_map, key=lambda indexpair: dist_map[indexpair])
-    circuits = [set([pos]) for pos in data]
-    for i,j in ordered[:1000]:
-        set_a = next(s for s in circuits if data[i] in s)
-        set_b = next(s for s in circuits if data[j] in s)
-        circuits.remove(set_a)
-        if set_a is not set_b: circuits.remove(set_b)
-        circuits.append(set_a.union(set_b))
-    results = sorted([len(x) for x in circuits], reverse=True)
-    return math.prod(results[:3])
+    return dist_map
 
-def part_b(data):
-    dist_map = {}
-    for i,pos in enumerate(data):
-        for j,other in enumerate(data[i+1:], start=i+1):
-            if i != j:
-                dist_map[(i,j)] = math.dist(pos, other)
-    ordered = sorted(dist_map, key=lambda indexpair: dist_map[indexpair])
-    circuits = [set([pos]) for pos in data]
-    last_i, last_j = -1, -1
-    for i,j in ordered:
-        if len(circuits) == 1:
-            break
-        set_a = next(s for s in circuits if data[i] in s)
-        set_b = next(s for s in circuits if data[j] in s)
+def combine_sets(circuits, pos_a, pos_b):
+    set_a = next(s for s in circuits if pos_a in s)
+    set_b = next(s for s in circuits if pos_b in s)
+    if set_a != set_b:
         circuits.remove(set_a)
-        if set_a is not set_b: circuits.remove(set_b)
+        circuits.remove(set_b)
         circuits.append(set_a.union(set_b))
-        last_i, last_j = i, j
-    (x1,y1,z1) = data[last_i]
-    (x2,y2,z2) = data[last_j]
-    return x1 * x2
 
 puzzle = Puzzle(2025, 8)
 data = parse(puzzle.input_data)
-print("part A", part_a(data))
-print("part B", part_b(data))
+a,b = solve(data)
+print("part A", a)
+print("part B", b)
