@@ -3,8 +3,7 @@ from aocd.models import Puzzle
 from utils import digits
 
 def parse(input):
-    ranges = [p.split('-') for p in input.strip().split(',')]
-    return [tuple(int(n) for n in pair) for pair in ranges]
+    return [tuple(int(n) for n in range.split('-')) for range in input.split(',')]
 
 def solve(data):
     a = b = 0
