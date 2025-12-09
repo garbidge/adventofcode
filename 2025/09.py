@@ -24,9 +24,9 @@ def viable_rect(x1, y1, x2, y2, locations):
         min_cx, max_cx = sorted((cx1, cx2))
         min_cy, max_cy = sorted((cy1, cy2))
 
-        x_outside = max_x <= min_cx or min_x >= max_cx
-        y_outside = max_y <= min_cy or min_y >= max_cy
-        if not x_outside and not y_outside:
+        x_intersects = min_x < max_cx and max_x > min_cx
+        y_intersects = min_y < max_cy and max_y > min_cy
+        if x_intersects and y_intersects:
             return False
     return True
 
