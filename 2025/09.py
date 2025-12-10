@@ -5,13 +5,9 @@ def parse(input):
     return [tuple(int(n) for n in line.split(",")) for line in input.splitlines()]
 
 def solve(data):
-    a, b = 0, 0
-    for p1, p2 in itertools.combinations(data, 2):
-        area = rect_area(*p1, *p2)
-        a = max(a, area)
-        if area > b and viable_rect(*p1, *p2, data):
-            b = area
-    return a, b
+    area_lookup = { (p1, p2): rect_area(*p1, *p2) for p1, p2 in itertools.combinations(data, 2) }
+    ordered = sorted(area_lookup.items(), key=lambda x: x[1], reverse=True)
+    return next(area for (_, area) in ordered), next(area for ((p1, p2), area) in ordered if viable_rect(*p1, *p2, data))
 
 def rect_area(x1, y1, x2, y2):
     return (abs(x2 - x1) + 1) * (abs(y2 - y1) + 1)
